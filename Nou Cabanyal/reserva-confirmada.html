@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reserva confirmada · Aparhotel Cabanyal</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#1d4f63">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4f63'/%3E%3Cpath d='M16 5l11 11-11 11L5 16z' fill='none' stroke='%23f3ead9' stroke-width='2.2'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23d9794f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="page-ok">
+  <header class="site-header is-solid is-fixed-solid" id="top">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html" aria-label="Aparhotel Cabanyal">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7"/><path d="M16 5l11 11-11 11L5 16z"/><circle cx="16" cy="16" r="3.4"/></svg>
+        <span class="brand-name">Aparhotel Cabanyal</span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Principal">
+        <a href="index.html#apartamentos" data-i18n="nav.apts">Apartamentos</a>
+        <a href="index.html#barrio" data-i18n="nav.area">El barrio</a>
+        <a href="index.html#ubicacion" data-i18n="nav.loc">Ubicación</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="es" aria-pressed="true">ES</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="menu-toggle" type="button" aria-controls="nav" aria-expanded="false" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="simple-page">
+    <div class="wrap narrow">
+      <div class="ok-box" id="ok-box" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div>
+        <p class="brand-name">Aparhotel Cabanyal</p>
+        <p class="muted" data-i18n="foot.tag">Apartamentos turísticos en el Cabanyal, Valencia</p>
+      </div>
+      <div class="muted footer-legal">
+        <p>Nou Cabanyal SL · <span id="foot-address"></span></p>
+        <p><a href="condiciones.html" data-i18n="foot.terms">Condiciones y privacidad</a> · © <span id="year"></span> Nou Cabanyal SL</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Galería (no se usa aquí, pero main.js la espera) -->
+  <div class="lightbox" id="lightbox" hidden>
+    <div class="lb-top"><div><p class="lb-title" id="lb-title"></p><p class="lb-count" id="lb-count"></p></div>
+      <div class="lb-actions"><a class="btn btn-accent btn-sm" id="lb-book"></a><button class="lb-close" type="button" id="lb-close" aria-label="Cerrar"></button></div></div>
+    <div class="lb-stage"><button class="lb-nav lb-prev" type="button" id="lb-prev"></button><figure class="lb-figure"><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption></figure><button class="lb-nav lb-next" type="button" id="lb-next"></button></div>
+    <div class="lb-thumbs" id="lb-thumbs"></div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/precios.js"></script>
+  <script src="assets/js/reservas.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aparhotel Cabanyal · Apartamentos a 500 m de la playa en Valencia</title>
+  <meta name="description" content="Ocho apartamentos nuevos en el barrio del Cabanyal, a 500 m de la playa de Las Arenas (Valencia). Check-in autónomo, aire acondicionado y wifi. Reserva directa en nuestra web, sin intermediarios.">
+  <meta property="og:title" content="Aparhotel Cabanyal · Apartamentos junto a la playa en Valencia">
+  <meta property="og:description" content="Ocho apartamentos nuevos en el Cabanyal, a 500 m de la playa.">
+  <meta property="og:image" content="assets/img/zona/playa-palmeras-l.jpg">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#1d4f63">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4f63'/%3E%3Cpath d='M16 5l11 11-11 11L5 16z' fill='none' stroke='%23f3ead9' stroke-width='2.2'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23d9794f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip" href="#apartamentos" data-i18n="skip">Saltar al contenido</a>
+
+  <!-- ============ CABECERA ============ -->
+  <header class="site-header" id="top">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="Aparhotel Cabanyal">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7"/><path d="M16 5l11 11-11 11L5 16z"/><circle cx="16" cy="16" r="3.4"/></svg>
+        <span class="brand-name">Aparhotel Cabanyal</span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Principal">
+        <a href="#apartamentos" data-i18n="nav.apts">Apartamentos</a>
+        <a href="#incluye" data-i18n="nav.amen">Qué incluye</a>
+        <a href="#barrio" data-i18n="nav.area">El barrio</a>
+        <a href="#playa" data-i18n="nav.beach">La playa</a>
+        <a href="#ubicacion" data-i18n="nav.loc">Ubicación</a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="es" aria-pressed="true">ES</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <a class="btn btn-accent btn-sm header-cta" href="#apartamentos" data-i18n="nav.book">Reservar</a>
+        <button class="menu-toggle" type="button" aria-controls="nav" aria-expanded="false" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ PORTADA ============ -->
+    <section class="hero">
+      <img class="hero-img is-active"
+           src="assets/img/zona/playa-palmeras-l.jpg"
+           srcset="assets/img/zona/playa-palmeras-m.jpg 900w, assets/img/zona/playa-palmeras-l.jpg 1800w, assets/img/zona/playa-palmeras-xl.jpg 2400w"
+           sizes="100vw" alt="Palmeras en el paseo marítimo, junto a la playa" data-i18n-alt="hero.alt" fetchpriority="high">
+      <img class="hero-img"
+           src="assets/img/zona/barcas-playa-l.jpg"
+           srcset="assets/img/zona/barcas-playa-m.jpg 900w, assets/img/zona/barcas-playa-l.jpg 1800w"
+           sizes="100vw" alt="Barcas de pescadores en la playa, al atardecer" data-i18n-alt="hero.alt2">
+      <img class="hero-img"
+           src="assets/img/zona/mosaico-1928-l.jpg"
+           srcset="assets/img/zona/mosaico-1928-m.jpg 900w, assets/img/zona/mosaico-1928-l.jpg 1800w"
+           sizes="100vw" alt="Azulejos de una fachada modernista del Cabanyal" data-i18n-alt="hero.alt3">
+      <div class="hero-shade"></div>
+      <div class="wrap hero-content">
+        <p class="eyebrow" data-i18n="hero.kicker">València · El Cabanyal</p>
+        <h1 data-i18n="hero.title">Tu casa junto al mar, en el barrio más auténtico de Valencia</h1>
+        <p class="hero-sub" data-i18n="hero.sub">Ocho apartamentos nuevos a 500 metros de la playa de Las Arenas. Check-in autónomo, aire acondicionado y todo listo para que solo tengas que disfrutar.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-accent" href="#apartamentos" data-i18n="hero.cta1">Ver apartamentos</a>
+          <a class="btn btn-ghost" href="#reservar" data-i18n="hero.cta2">Reserva directa</a>
+        </div>
+        <ul class="hero-badges" id="hero-badges"></ul>
+      </div>
+    </section>
+
+    <!-- ============ DATOS CLAVE ============ -->
+    <section class="facts" aria-label="Datos clave">
+      <div class="wrap facts-grid">
+        <div class="fact"><strong>500 m</strong><span data-i18n="facts.beach">hasta la playa</span></div>
+        <div class="fact"><strong>8</strong><span data-i18n="facts.apts">apartamentos</span></div>
+        <div class="fact"><strong>2026</strong><span data-i18n="facts.new">totalmente nuevos</span></div>
+        <div class="fact"><strong>550 m</strong><span data-i18n="facts.metro">al metro Marítim-Serrería</span></div>
+      </div>
+    </section>
+
+    <!-- ============ APARTAMENTOS ============ -->
+    <section class="section" id="apartamentos">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="apts.kicker">Los apartamentos</p>
+          <h2 data-i18n="apts.title">Elige tu casa</h2>
+          <p class="lead" data-i18n="apts.lead">Todos están en el mismo edificio y se estrenaron en 2026: un dormitorio con cama doble, sofá cama en el salón, baño y cocina equipada. Entra en cada casa para ver todas sus fotos y detalles.</p>
+        </header>
+        <div class="filters" role="group" aria-label="Filtros" id="filters">
+          <button type="button" class="chip is-active" data-filter="all" data-i18n="f.all">Todos</button>
+          <button type="button" class="chip" data-filter="outdoor" data-i18n="f.outdoor">Terraza o balcón</button>
+          <button type="button" class="chip" data-filter="four" data-i18n="f.four">Hasta 4 personas</button>
+        </div>
+        <div class="cards" id="cards"></div>
+      </div>
+    </section>
+
+    <!-- ============ QUÉ INCLUYE ============ -->
+    <section class="section section-tint" id="incluye">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="amen.kicker">Qué incluye</p>
+          <h2 data-i18n="amen.title">Todo lo necesario, nada que te sobre</h2>
+        </header>
+        <ul class="amenities" id="amenities"></ul>
+        <p class="note" data-i18n="amen.note">La cocina es tipo office, sin fuegos, y hay un supermercado justo al lado con comida preparada. En la página de cada casa tienes la lista completa de servicios.</p>
+      </div>
+    </section>
+
+    <!-- ============ EL BARRIO ============ -->
+    <section class="section" id="barrio">
+      <div class="wrap">
+        <div class="split">
+          <header class="section-head">
+            <p class="eyebrow" data-i18n="area.kicker">El barrio</p>
+            <h2 data-i18n="area.title">El Cabanyal, el antiguo barrio de pescadores</h2>
+            <p class="lead" data-i18n="area.p1">Calles estrechas paralelas al mar, fachadas cubiertas de azulejos de colores, murales y plazas con palmeras. El Cabanyal conserva la vida de barrio de siempre y a la vez es una de las zonas con más ambiente de Valencia.</p>
+            <p data-i18n="area.p2">A pocos minutos a pie tienes el Mercat del Cabanyal, bodegas históricas como Casa Montaña, abierta desde 1836, la plaza del Rosari con el Teatre El Musical y un sinfín de bares y terrazas para comer bien sin coger el coche.</p>
+          </header>
+        </div>
+        <div class="mosaic" id="mosaic"></div>
+      </div>
+    </section>
+
+    <!-- ============ LA PLAYA ============ -->
+    <section class="beach" id="playa">
+      <div class="beach-media">
+        <img src="assets/img/zona/playa-arenas-l.jpg" srcset="assets/img/zona/playa-arenas-m.jpg 900w, assets/img/zona/playa-arenas-l.jpg 1800w" sizes="(min-width: 900px) 60vw, 100vw" alt="La playa, con el puerto al fondo" data-i18n-alt="beach.alt1" loading="lazy" data-zoom="beach" data-index="0">
+      </div>
+      <div class="beach-text">
+        <p class="eyebrow" data-i18n="beach.kicker">La playa</p>
+        <h2 data-i18n="beach.title">Del apartamento a la arena en un paseo</h2>
+        <p data-i18n="beach.p1">La playa de Las Arenas está a unos 500 metros: baja con la toalla por la mañana y vuelve a comer a casa. Arena fina, aguas tranquilas y un paseo marítimo lleno de palmeras que enlaza con la Malvarrosa.</p>
+        <p data-i18n="beach.p2">Por la tarde, el paseo es perfecto para correr, ir en bici o ver la puesta de sol con un arroz frente al mar.</p>
+        <button class="beach-thumb" type="button" data-zoom="beach" data-index="1" aria-label="Ver foto del paseo marítimo">
+          <img src="assets/img/zona/playa-palmeras-m.jpg" alt="" loading="lazy">
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ UBICACIÓN ============ -->
+    <section class="section" id="ubicacion">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="eyebrow" data-i18n="loc.kicker">Ubicación</p>
+          <h2 data-i18n="loc.title">Cerca del mar y bien conectado</h2>
+          <p class="lead" id="address"></p>
+        </header>
+        <div class="loc-grid">
+          <div class="map">
+            <iframe id="map" title="Mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <a class="map-link" id="map-link" target="_blank" rel="noopener" data-i18n="loc.open">Abrir en Google Maps</a>
+          </div>
+          <ul class="distances" id="distances"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESERVAR ============ -->
+    <section class="section section-sea" id="reservar">
+      <div class="wrap">
+        <header class="section-head center">
+          <p class="eyebrow" data-i18n="direct.kicker">Reserva directa</p>
+          <h2 data-i18n="direct.title">Reserva aquí y paga menos</h2>
+          <p class="lead" data-i18n="direct.lead">Sin intermediarios: eliges tu casa y tus fechas, pagas de forma segura y hablas directamente con nosotros.</p>
+        </header>
+        <div class="book-grid" id="book-grid"></div>
+        <p class="direct-cta"><a class="btn btn-accent" href="#apartamentos" data-i18n="direct.cta">Elige tu casa y tus fechas</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ PIE ============ -->
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div>
+        <p class="brand-name">Aparhotel Cabanyal</p>
+        <p class="muted" data-i18n="foot.tag">Apartamentos turísticos en el Cabanyal, Valencia</p>
+      </div>
+      <div class="muted footer-legal">
+        <p>Nou Cabanyal SL · <span id="foot-address"></span></p>
+        <p><a href="condiciones.html" data-i18n="foot.terms">Condiciones y privacidad</a> · © <span id="year"></span> Nou Cabanyal SL</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ GALERÍA ============ -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-title" hidden>
+    <div class="lb-top">
+      <div>
+        <p class="lb-title" id="lb-title"></p>
+        <p class="lb-count" id="lb-count"></p>
+      </div>
+      <div class="lb-actions">
+        <a class="btn btn-accent btn-sm" id="lb-book" target="_blank" rel="noopener"></a>
+        <button class="lb-close" type="button" id="lb-close" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="lb-stage">
+      <button class="lb-nav lb-prev" type="button" id="lb-prev" aria-label="Anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <figure class="lb-figure">
+        <img id="lb-img" alt="">
+        <figcaption id="lb-cap"></figcaption>
+      </figure>
+      <button class="lb-nav lb-next" type="button" id="lb-next" aria-label="Siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div class="lb-thumbs" id="lb-thumbs"></div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/precios.js"></script>
+  <script src="assets/js/reservas.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
