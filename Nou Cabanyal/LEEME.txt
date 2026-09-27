@@ -1,4 +1,4 @@
-WEB APARHOTEL CABANYAL — cómo usarla
+WEB APARTHOTEL CABANYAL — cómo usarla
 ================================
 
 VER LA WEB
@@ -33,7 +33,7 @@ galería, datos, información para el huésped y tres desplegables:
     en NC_SERVICIOS.
   - Qué ver y dónde comer en el Cabanyal: se edita en assets/js/barrio.js,
     en NC_LUGARES. Para una colaboración, rellena el campo "oferta"
-    (p. ej. "10 % para huéspedes de Aparhotel Cabanyal") y el sitio aparece destacado.
+    (p. ej. "10 % para huéspedes de Aparthotel Cabanyal") y el sitio aparece destacado.
   - Historia del Cabanyal: también en assets/js/barrio.js (NC_HISTORIA).
 
 IDIOMAS

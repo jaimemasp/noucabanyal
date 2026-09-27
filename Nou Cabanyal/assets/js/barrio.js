@@ -1,5 +1,5 @@
-/* Aparhotel Cabanyal — contenido del barrio (lugares recomendados e historia).
-   LUGARES: para añadir una colaboración, rellena "oferta" (p. ej. "10 % para huéspedes de Aparhotel Cabanyal")
+/* Aparthotel Cabanyal — contenido del barrio (lugares recomendados e historia).
+   LUGARES: para añadir una colaboración, rellena "oferta" (p. ej. "10 % para huéspedes de Aparthotel Cabanyal")
    y aparecerá destacada. "q" es lo que se busca en Google Maps. */
 
 window.NC_LUGARES = [

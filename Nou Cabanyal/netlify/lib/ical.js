@@ -55,7 +55,7 @@ function escapar(s) { return String(s).replace(/\\/g, "\\\\").replace(/;/g, "\;"
 function generar(nombreCalendario, reservas) {
   const ahora = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const l = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Aparhotel Cabanyal//Reservas directas//ES", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Aparthotel Cabanyal//Reservas directas//ES", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     `X-WR-CALNAME:${escapar(nombreCalendario)}`,
   ];
   for (const r of reservas) {

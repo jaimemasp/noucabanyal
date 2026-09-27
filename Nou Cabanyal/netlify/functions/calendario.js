@@ -17,7 +17,7 @@ exports.handler = async (event) => {
   } catch (e) {
     return { statusCode: 502, body: "No se pudo leer Stripe" };
   }
-  const cuerpo = ical.generar(`Aparhotel Cabanyal · Casa ${casa} (web)`,
+  const cuerpo = ical.generar(`Aparthotel Cabanyal · Casa ${casa} (web)`,
     reservas.map((r) => ({ id: r.id, entrada: r.entrada, salida: r.salida, resumen: "Reserva directa web" })));
   return { statusCode: 200, headers: { "Content-Type": "text/calendar; charset=utf-8", "Cache-Control": "no-store" }, body: cuerpo };
 };

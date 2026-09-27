@@ -1,4 +1,4 @@
-/* Aparhotel Cabanyal — lógica común de reservas (la usan la web y el servidor de pagos).
+/* Aparthotel Cabanyal — lógica común de reservas (la usan la web y el servidor de pagos).
    Calcula noches, precios y valida una estancia. No toca nada de pagos. */
 (function (root, factory) {
   if (typeof module !== "undefined" && module.exports) module.exports = factory(require("./precios.js"));

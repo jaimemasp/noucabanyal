@@ -1,5 +1,5 @@
 /* =========================================================
-   Aparhotel Cabanyal — estilos
+   Aparthotel Cabanyal — estilos
    Paleta inspirada en el barrio: arena, azul mar, verde azulejo y terracota
    ========================================================= */
 :root {
@@ -119,7 +119,13 @@ p { margin: 0 0 1em; }
   }
   .nav a { padding: 14px 4px; border-bottom: 1px solid var(--line); font-size: 17px; }
   .site-header.is-open .nav { opacity: 1; transform: none; pointer-events: auto; }
+  .nav-single { padding-top: 14px; padding-bottom: 14px; align-items: stretch; }
+  .nav a.nav-home { justify-content: center; }
 }
+
+/* Nav de una sola opción (páginas secundarias: condiciones, etc.) */
+.nav-single { align-items: center; }
+.nav a.nav-home { border-bottom: none; padding: 10px 20px; }
 
 /* ---------- Portada ---------- */
 .hero { position: relative; min-height: min(92vh, 900px); display: flex; align-items: flex-end; color: #fff; overflow: hidden; }
@@ -131,7 +137,7 @@ p { margin: 0 0 1em; }
 @media (prefers-reduced-motion: reduce) { .hero-img { transition: none; } }
 .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,30,40,.45) 0%, rgba(10,30,40,.05) 30%, rgba(10,30,40,.25) 55%, rgba(10,30,40,.72) 100%); }
 .hero-content { position: relative; padding: calc(var(--header-h) + 40px) 0 56px; }
-.hero .eyebrow { color: #f3dcc8; }
+.hero .eyebrow { color: #fff; text-shadow: 0 1px 3px rgba(28,40,48,.6), 0 2px 14px rgba(28,40,48,.4); }
 .hero h1 { font-size: clamp(38px, 6.2vw, 76px); max-width: 16ch; font-weight: 500; }
 .hero-sub { font-size: clamp(17px, 1.6vw, 20px); max-width: 52ch; margin-top: 18px; color: rgba(255,255,255,.92); }
 .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
@@ -277,10 +283,10 @@ p { margin: 0 0 1em; }
 /* ---------- Pie ---------- */
 .site-footer { background: var(--ink); color: #fff; padding: 40px 0; }
 .site-footer .muted { color: rgba(255,255,255,.65); }
-.footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; font-size: 14px; }
+.footer-inner { display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 14px; text-align: center; }
 .footer-inner p { margin: 0 0 4px; }
-.footer-legal { text-align: right; }
-@media (max-width: 700px) { .footer-legal { text-align: left; } }
+.site-footer .brand-name { font-size: 26px; }
+.footer-legal { text-align: center; }
 
 /* ---------- Galería (lightbox) ---------- */
 body.no-scroll { overflow: hidden; }

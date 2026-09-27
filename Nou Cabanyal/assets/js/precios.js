@@ -1,4 +1,4 @@
-/* Aparhotel Cabanyal — precios de la reserva directa.
+/* Aparthotel Cabanyal — precios de la reserva directa.
    "base" = precio por noche de cada casa en Booking.com (calendario del 24/09/2026), comprimido:
    "131x5" significa 131 € durante 5 noches seguidas, empezando en "inicio".
    Las casas 3 y 5 no están en Booking: usan la media de las casas 1, 2, 4 y 6.

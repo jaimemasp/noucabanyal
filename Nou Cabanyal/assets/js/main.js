@@ -1,4 +1,4 @@
-/* Aparhotel Cabanyal — lógica de la web (idiomas, apartamentos, página de cada casa, galería) */
+/* Aparthotel Cabanyal — lógica de la web (idiomas, apartamentos, página de cada casa, galería) */
 (function () {
   "use strict";
 
@@ -20,21 +20,21 @@
   ------------------------------------------------------------------ */
   var T = {
     es: {
-      "meta.title": "Aparhotel Cabanyal · Apartamentos a 500 m de la playa en Valencia",
+      "meta.title": "Aparthotel Cabanyal · Apartamentos a 500 m de la playa en Valencia",
       "meta.desc": "Ocho apartamentos nuevos en el barrio del Cabanyal, a 500 m de la playa de Las Arenas (Valencia). Check-in autónomo, aire acondicionado y wifi. Reserva directa en nuestra web, sin intermediarios.",
       "skip": "Saltar al contenido",
-      "nav.apts": "Apartamentos", "nav.amen": "Qué incluye", "nav.area": "El barrio", "nav.beach": "La playa", "nav.loc": "Ubicación", "nav.book": "Reservar",
+      "nav.apts": "Apartamentos", "nav.amen": "Qué incluye", "nav.area": "El barrio", "nav.beach": "La playa", "nav.loc": "Ubicación", "nav.book": "Reservar", "nav.home": "Volver al inicio",
       "hero.alt": "Palmeras en el paseo marítimo, junto a la playa",
       "hero.alt2": "Barcas de pescadores en la playa, al atardecer",
       "hero.alt3": "Azulejos de una fachada modernista del Cabanyal",
       "hero.kicker": "València · El Cabanyal",
-      "hero.title": "Tu aparhotel junto al mar, en el barrio más auténtico de Valencia",
+      "hero.title": "Tu aparthotel junto al mar, en el barrio más auténtico de Valencia",
       "hero.sub": "Ocho apartamentos nuevos a 500 metros de la playa de Las Arenas. Descúbrelos y elige el que más te guste.",
       "hero.cta1": "Ver apartamentos", "hero.cta2": "Reserva directa",
       "badge.rating": "{r}/5 · {n} opiniones de huéspedes", "badge.self": "Check-in autónomo",
       "facts.beach": "hasta la playa", "facts.apts": "apartamentos", "facts.new": "obra nueva", "facts.metro": "al metro Marítim-Serrería",
       "apts.kicker": "Los apartamentos", "apts.title": "Elige tu casa",
-      "apts.lead": "Todos están en el mismo edificio y se estrenaron en 2026: un dormitorio con cama doble, sofá cama en el salón, baño y cocina equipada. Entra en cada casa para ver todas sus fotos y detalles.",
+      "apts.lead": "Todas las unidades en el mismo edificio en el corazón del Cabanyal y reformadas en 2026. Dormitorios con cama doble, sofá cama, baño y cocina equipada. Todo lo necesario para sentirte como en casa, a 500m de la playa.",
       "f.all": "Todos", "f.outdoor": "Terraza o balcón", "f.four": "Hasta 4 personas",
       "card.house": "Casa {n}", "card.guests": "Hasta {n} personas", "card.bed": "Cama doble + sofá cama",
       "card.photos": "{n} fotos", "card.view": "Ver casa", "card.book": "Reservar", "card.from": "Desde <b>{p} €</b> / noche",
@@ -42,14 +42,14 @@
       "key.work": "Zona para trabajar", "key.ac": "Aire acondicionado", "key.wifi": "WiFi gratis",
       "cap.d": "Dormitorio", "cap.s": "Salón", "cap.k": "Cocina", "cap.b": "Baño", "cap.x": "Detalles",
       "amen.kicker": "Qué incluye", "amen.title": "Todo lo necesario, nada que te sobre",
-      "amen.note": "La cocina es tipo office, sin fuegos, y hay un supermercado justo al lado con comida preparada. En la página de cada casa tienes la lista completa de servicios.",
+      "amen.note": "Cocina tipo office, sin fuegos, y con un supermercado a 100 metros con comida preparada. En la página de cada casa encuentras la lista completa de servicios.",
       "area.kicker": "El barrio", "area.title": "El Cabanyal, el antiguo barrio de pescadores",
-      "area.p1": "Calles estrechas paralelas al mar, fachadas cubiertas de azulejos de colores, murales y plazas con palmeras. El Cabanyal conserva la vida de barrio de siempre y a la vez es una de las zonas con más ambiente de Valencia.",
-      "area.p2": "A pocos minutos a pie tienes el Mercat del Cabanyal, bodegas históricas como Casa Montaña, abierta desde 1836, la plaza del Rosari con el Teatre El Musical y un sinfín de bares y terrazas para comer bien sin coger el coche.",
+      "area.p1": "Calles estrechas paralelas al mar, fachadas cubiertas de azulejos de colores, murales y plazas con palmeras: el Cabanyal conserva su vida de barrio de siempre y, a la vez, es una de las zonas con más ambiente de Valencia.",
+      "area.p2": "A un paseo tienes el Mercat del Cabanyal para la compra del día, bodegas centenarias como Casa Montaña —abierta desde 1836—, la plaza del Rosari con el Teatre El Musical, y un sinfín de bares y terrazas donde comer bien sin necesidad de coche.",
       "area.gallery": "El Cabanyal",
       "beach.kicker": "La playa", "beach.title": "Del apartamento a la arena en un paseo",
-      "beach.p1": "La playa de Las Arenas está a unos 500 metros: baja con la toalla por la mañana y vuelve a comer a casa. Arena fina y un paseo marítimo lleno de palmeras que enlaza con la Malvarrosa.",
-      "beach.p2": "Por la tarde, el paseo es perfecto para correr, ir en bici o ver caer el sol con un arroz frente al mar.",
+      "beach.p1": "La playa de Las Arenas está a unos 500 metros: baja con la toalla por la mañana y vuelve a comer a casa. Arena fina, entrada suave al agua y un paseo marítimo lleno de palmeras que enlaza con la Malvarrosa.",
+      "beach.p2": "Por la tarde, el paseo es perfecto para correr, ir en bici o sentarte a ver cómo cae la tarde con un arroz frente al mar.",
       "beach.alt1": "La playa, con el puerto al fondo", "beach.alt2": "Palmeras en el paseo marítimo", "beach.gallery": "La playa",
       "loc.kicker": "Ubicación", "loc.title": "Cerca del mar y bien conectado", "loc.open": "Abrir en Google Maps",
       "direct.kicker": "Reserva directa", "direct.title": "Reserva aquí y paga menos",
@@ -60,10 +60,9 @@
       "direct.cta": "Elige tu casa y tus fechas",
       "book.direct.t": "¿Tienes dudas?", "book.direct.p": "Escríbenos y te ayudamos a elegir el apartamento y las fechas.",
       "book.wa": "WhatsApp", "book.mail": "Email", "book.call": "Llamar", "book.ig": "Instagram",
-      "foot.tag": "Apartamentos turísticos en el Cabanyal, Valencia",
       "lb.close": "Cerrar", "lb.prev": "Anterior", "lb.next": "Siguiente", "lb.of": "{i} de {n}",
       /* Página de cada casa */
-      "casa.meta.title": "Casa {n} · Aparhotel Cabanyal · Apartamento en el Cabanyal, Valencia",
+      "casa.meta.title": "Casa {n} · Aparthotel Cabanyal · Apartamento en el Cabanyal, Valencia",
       "casa.back": "Todos los apartamentos",
       "casa.sub": "Apartamento de 1 dormitorio · Carrer de Vicent Brull, 73 · a 500 m de la playa",
       "casa.all": "Ver las {n} fotos",
@@ -111,7 +110,7 @@
       "err.stripe": "No hemos podido conectar con la pasarela de pago. Inténtalo de nuevo en unos minutos.",
       "foot.terms": "Condiciones y privacidad",
       /* Confirmación */
-      "ok.meta": "Reserva confirmada · Aparhotel Cabanyal", "ok.title": "¡Reserva confirmada!", "ok.lead": "Gracias, {n}. Hemos recibido tu pago y tu casa te está esperando.",
+      "ok.meta": "Reserva confirmada · Aparthotel Cabanyal", "ok.title": "¡Reserva confirmada!", "ok.lead": "Gracias, {n}. Hemos recibido tu pago y tu casa te está esperando.",
       "ok.pending": "Estamos confirmando tu pago", "ok.pending.p": "Si has completado el pago, recibirás un email de confirmación en unos minutos.",
       "ok.err": "No encontramos esta reserva", "ok.err.p": "Si has pagado y tienes dudas, escríbenos y lo revisamos.",
       "ok.casa": "Apartamento", "ok.dates": "Fechas", "ok.guests": "Huéspedes", "ok.total": "Total pagado", "ok.email": "Confirmación enviada a",
@@ -121,10 +120,10 @@
       "casa.fact.guests": "Hasta {n} personas", "spec.bath": "Baño privado", "casa.fact.m2": "{n} m²", "casa.fact.in": "Entrada {t} h"
     },
     en: {
-      "meta.title": "Aparhotel Cabanyal · Apartments 500 m from the beach in Valencia",
+      "meta.title": "Aparthotel Cabanyal · Apartments 500 m from the beach in Valencia",
       "meta.desc": "Eight brand-new apartments in El Cabanyal, 500 m from Las Arenas beach in Valencia. Self check-in, air conditioning and WiFi. Book direct on our website, with no middlemen.",
       "skip": "Skip to content",
-      "nav.apts": "Apartments", "nav.amen": "Amenities", "nav.area": "The area", "nav.beach": "The beach", "nav.loc": "Location", "nav.book": "Book",
+      "nav.apts": "Apartments", "nav.amen": "Amenities", "nav.area": "The area", "nav.beach": "The beach", "nav.loc": "Location", "nav.book": "Book", "nav.home": "Back to home",
       "hero.alt": "Palm trees on the seafront promenade, next to the beach",
       "hero.alt2": "Fishing boats on the beach at sunset",
       "hero.alt3": "Tiles on a modernist facade in El Cabanyal",
@@ -161,9 +160,8 @@
       "direct.cta": "Choose your apartment and dates",
       "book.direct.t": "Any questions?", "book.direct.p": "Message us and we’ll help you choose the apartment and dates.",
       "book.wa": "WhatsApp", "book.mail": "Email", "book.call": "Call", "book.ig": "Instagram",
-      "foot.tag": "Holiday apartments in El Cabanyal, Valencia",
       "lb.close": "Close", "lb.prev": "Previous", "lb.next": "Next", "lb.of": "{i} of {n}",
-      "casa.meta.title": "Casa {n} · Aparhotel Cabanyal · Apartment in El Cabanyal, Valencia",
+      "casa.meta.title": "Casa {n} · Aparthotel Cabanyal · Apartment in El Cabanyal, Valencia",
       "casa.back": "All apartments",
       "casa.sub": "One-bedroom apartment · Carrer de Vicent Brull, 73 · 500 m from the beach",
       "casa.all": "See all {n} photos",
@@ -209,7 +207,7 @@
       "err.horizonte": "Bookings are not open that far ahead yet.", "err.casa": "Invalid apartment.",
       "err.stripe": "We couldn’t connect to the payment gateway. Please try again in a few minutes.",
       "foot.terms": "Terms & privacy",
-      "ok.meta": "Booking confirmed · Aparhotel Cabanyal", "ok.title": "Booking confirmed!", "ok.lead": "Thank you, {n}. We’ve received your payment and your apartment is waiting for you.",
+      "ok.meta": "Booking confirmed · Aparthotel Cabanyal", "ok.title": "Booking confirmed!", "ok.lead": "Thank you, {n}. We’ve received your payment and your apartment is waiting for you.",
       "ok.pending": "We’re confirming your payment", "ok.pending.p": "If you completed the payment, you’ll receive a confirmation email within a few minutes.",
       "ok.err": "We can’t find this booking", "ok.err.p": "If you have paid and have any questions, please contact us.",
       "ok.casa": "Apartment", "ok.dates": "Dates", "ok.guests": "Guests", "ok.total": "Total paid", "ok.email": "Confirmation sent to",
@@ -241,6 +239,7 @@
     { f: "fachadas-206", c: "w2 h2", es: "Casas tradicionales con azulejos", en: "Traditional tiled houses" },
     { f: "calle-rosario", c: "", es: "Calle del Rosario", en: "Calle del Rosario" },
     { f: "mercat-cabanyal", c: "", es: "Mercat del Cabanyal", en: "Cabanyal Market" },
+    { f: "mercat-verdures", c: "", es: "Puestos de fruta y verdura", en: "Fruit and vegetable stalls" },
     { f: "placa-rosari", c: "h2", es: "Plaça del Rosari", en: "Plaça del Rosari" },
     { f: "casa-montana", c: "w2", es: "Casa Montaña, desde 1836", en: "Casa Montaña, since 1836" },
     { f: "azulejos", c: "", es: "Azulejos en las fachadas", en: "Tiled façades" },
@@ -249,7 +248,8 @@
     { f: "teatre-el-musical", c: "w2", es: "Teatre El Musical", en: "Teatre El Musical" },
     { f: "fachadas-azulejos", c: "", es: "Balcones de forja", en: "Wrought-iron balconies" },
     { f: "anyora", c: "", es: "Bodegas de siempre", en: "Old-style bodegas" },
-    { f: "calle-peatonal", c: "w2", es: "Calles peatonales", en: "Pedestrian streets" }
+    { f: "calle-peatonal", c: "w2", es: "Calles peatonales", en: "Pedestrian streets" },
+    { f: "passeig-palmeres", c: "h2", es: "Passeig marítim, entre palmeras", en: "Seafront promenade, among palm trees" }
   ];
 
   var DIST = [
@@ -857,7 +857,7 @@
      CONDICIONES
   ------------------------------------------------------------------ */
   function renderCond() {
-    document.title = lang === "es" ? "Condiciones de reserva y privacidad · Aparhotel Cabanyal" : "Booking terms and privacy · Aparhotel Cabanyal";
+    document.title = lang === "es" ? "Condiciones de reserva y privacidad · Aparthotel Cabanyal" : "Booking terms and privacy · Aparthotel Cabanyal";
     $all("[data-lang-block]").forEach(function (el) { el.hidden = el.getAttribute("data-lang-block") !== lang; });
     var E = CFG.empresa || {};
     $all("[data-emp]").forEach(function (el) {

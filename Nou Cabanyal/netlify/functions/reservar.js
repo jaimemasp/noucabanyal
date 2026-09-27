@@ -38,7 +38,7 @@ exports.handler = async (event) => {
   if (choque) return json(409, { error: "ocupado", dato: choque });
 
   const base = sitio(event);
-  const nombreCasa = `Casa ${casa} · Aparhotel Cabanyal`;
+  const nombreCasa = `Casa ${casa} · Aparthotel Cabanyal`;
   const desc = idioma === "es"
     ? `${q.noches} noches · entrada ${q.entrada} · salida ${q.salida} · ${q.huespedes} huésped${q.huespedes > 1 ? "es" : ""}`
     : `${q.noches} nights · check-in ${q.entrada} · check-out ${q.salida} · ${q.huespedes} guest${q.huespedes > 1 ? "s" : ""}`;
