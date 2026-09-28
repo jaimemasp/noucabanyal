@@ -13,7 +13,7 @@ exports.handler = async (event) => {
 
   if (q.cancelar) {
     try {
-      const r = await lodgify("DELETE", `/v2/reservations/bookings/${q.cancelar}`);
+      const r = await lodgify("DELETE", `/v1/reservation/booking/${q.cancelar}`);
       return json(200, { ok: true, cancelada: q.cancelar, respuesta: r });
     } catch (e) {
       return json(200, { ok: false, error: { message: e.message, status: e.status, body: e.body } });
