@@ -1,0 +1,53 @@
+WEB APARTHOTEL CABANYAL — cómo usarla
+================================
+
+VER LA WEB
+Haz doble clic en index.html y se abre en tu navegador (necesita internet para
+cargar las fotos de los apartamentos y las fuentes).
+
+CAMBIAR DATOS DE CONTACTO, VALORACIONES, ETC.
+Abre assets/js/data.js con cualquier editor de texto (TextEdit en modo texto,
+VS Code...). Arriba del todo, en NC_CONFIG, rellena:
+  whatsapp:  "34600111222"   (con prefijo, sin + ni espacios)
+  telefono:  "+34 600 111 222"
+  email:     "reservas@tudominio.com"
+  instagram: "https://instagram.com/tu_perfil"
+Si un campo se queda vacío, su botón no aparece. En cuanto rellenes alguno,
+aparece la tarjeta "Reserva directa" en la sección Reservar.
+Ahí también están la nota de Airbnb (airbnbRating) y el número de evaluaciones.
+
+FOTOS
+- Barrio y playa: tus fotos, optimizadas, en assets/img/zona/.
+- Apartamentos: ahora se cargan directamente desde tus anuncios de Booking y
+  Airbnb. Si prefieres tenerlas dentro de la web (recomendable antes de
+  publicarla), guárdalas así:
+      assets/img/casas/casa-1/01.jpg, 02.jpg, 03.jpg...
+      assets/img/casas/casa-2/01.jpg...
+  con el mismo número de fotos que tiene cada casa, y en data.js cambia
+  photoSource: "remote"  por  photoSource: "local".
+
+PÁGINA DE CADA CASA
+Cada apartamento tiene su propia página (casa.html?n=1, casa.html?n=2...), con
+galería, datos, información para el huésped y tres desplegables:
+  - Todos los servicios: se editan en assets/js/data.js,
+    en NC_SERVICIOS.
+  - Qué ver y dónde comer en el Cabanyal: se edita en assets/js/barrio.js,
+    en NC_LUGARES. Para una colaboración, rellena el campo "oferta"
+    (p. ej. "10 % para huéspedes de Aparthotel Cabanyal") y el sitio aparece destacado.
+  - Historia del Cabanyal: también en assets/js/barrio.js (NC_HISTORIA).
+
+IDIOMAS
+Español e inglés. La web elige el idioma del navegador del visitante y se puede
+cambiar con el botón ES / EN. Los textos están en assets/js/main.js (objeto T).
+
+RESERVAS Y PAGOS (reserva directa, sin Booking ni Airbnb)
+Cada casa tiene un calendario con precios y un botón para pagar con tarjeta a
+través de Stripe. Los precios están en assets/js/precios.js. Cómo ponerlo en
+marcha, paso a paso: GUIA-PAGOS.txt.
+Si abres la web con doble clic en tu ordenador, el calendario y los precios
+funcionan pero el pago sale en modo "vista previa": el cobro real solo funciona
+con la web publicada en Netlify.
+
+PUBLICAR
+Sigue GUIA-PAGOS.txt (Netlify + Stripe). La carpeta netlify/ contiene el pequeño
+servidor que habla con Stripe y con los calendarios de Booking y Airbnb.

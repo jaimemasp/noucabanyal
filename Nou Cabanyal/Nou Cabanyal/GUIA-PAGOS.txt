@@ -1,0 +1,117 @@
+GUÍA: PONER EN MARCHA LAS RESERVAS Y PAGOS EN LA WEB
+=====================================================
+
+QUÉ HACE EL SISTEMA
+- En la página de cada casa el huésped elige fechas en un calendario, ve el precio
+  final (internamente, un 5 % más barato que la tarifa de Booking) y paga con
+  tarjeta en la página segura de Stripe. Nunca se le manda a Booking ni a Airbnb.
+  IMPORTANTE: la web ya NO muestra en ningún sitio el porcentaje de descuento ni
+  lo compara con la tarifa de Booking/Airbnb (solo se ve el precio final), porque
+  anunciarlo puede incumplir la paridad de tarifas de esas plataformas y arriesgar
+  la cuenta. El descuento se sigue aplicando por dentro, simplemente no se anuncia.
+- Antes de cobrar, la web consulta los calendarios de Booking y Airbnb de esa casa
+  y las reservas ya pagadas en la web. Si las fechas están ocupadas, no deja pagar.
+- La web publica un calendario propio por casa con sus reservas directas, para que
+  Booking y Airbnb bloqueen esas fechas.
+- Cada reserva queda guardada como un pago en Stripe (casa, fechas, huéspedes,
+  nombre, teléfono, hora de llegada y mensaje). No hace falta base de datos.
+
+LO QUE TIENES QUE CREAR TÚ (yo no puedo abrir cuentas ni manejar tus claves)
+1. Cuenta de Stripe a nombre de Nou Cabanyal SL: https://stripe.com/es
+2. Cuenta de GitHub (gratis) para guardar la web: https://github.com
+3. Cuenta de Netlify (gratis) para publicarla: https://www.netlify.com
+   La web necesita un alojamiento con "funciones" (el pequeño servidor que habla
+   con Stripe). Por eso no vale arrastrar la carpeta a un hosting cualquiera.
+
+PASO A PASO
+A) STRIPE
+   1. Crea la cuenta y completa los datos de la empresa y el IBAN para cobrar.
+   2. Desarrolladores > Claves de API > copia la "Clave secreta" de PRUEBA
+      (empieza por sk_test_). No se la pases a nadie ni la pegues en la web.
+   3. Configuración > Emails de clientes > activa los recibos de pagos correctos.
+   4. Configuración > Notificaciones > activa el aviso por email de cada pago.
+
+B) PUBLICAR LA WEB
+   1. En GitHub crea un repositorio PRIVADO (por ejemplo "nou-cabanyal-web") y
+      sube el contenido de esta carpeta (se puede arrastrar desde el navegador).
+   2. En Netlify: Add new site > Import an existing project > GitHub > elige el
+      repositorio > Deploy. El archivo netlify.toml ya lo configura todo.
+   3. Netlify te dará una dirección tipo https://nombre.netlify.app. Luego puedes
+      conectar tu dominio (Domain management).
+
+C) VARIABLES SECRETAS EN NETLIFY
+   Site configuration > Environment variables > Add a variable:
+   - STRIPE_SECRET_KEY   = tu clave sk_test_... (más adelante, la sk_live_...)
+   - ICAL_EXPORT_TOKEN   = una contraseña larga inventada (ej.: nc-8f3k2p9x-2026)
+   - ICAL_CASA_1 ... ICAL_CASA_8 = los enlaces de calendario (.ics) de Booking y
+     Airbnb de cada casa. Si una casa tiene dos enlaces, sepáralos con una coma.
+   Después: Deploys > Trigger deploy, para que se apliquen.
+
+D) SINCRONIZAR CALENDARIOS (una vez por casa)
+   1. Exportar desde Booking: Extranet > Tarifas y disponibilidad > Sincronizar
+      calendarios > Exportar calendario > copia el enlace.
+   2. Exportar desde Airbnb: Calendario de la casa > Disponibilidad > Conectar
+      calendarios > Exportar calendario > copia el enlace.
+      (Los nombres de los menús pueden variar un poco.)
+   3. Pega esos enlaces en ICAL_CASA_N (paso C).
+   4. Importar en Booking y en Airbnb el calendario de la web de cada casa:
+        https://TU-WEB/api/calendario?casa=1&token=TU_ICAL_EXPORT_TOKEN
+        https://TU-WEB/api/calendario?casa=2&token=TU_ICAL_EXPORT_TOKEN  ...
+      (en Booking: "Importar calendario"; en Airbnb: "Importar calendario").
+
+E) PROBAR SIN COBRAR DE VERDAD
+   Con la clave sk_test_, haz una reserva en tu web con la tarjeta de prueba
+   4242 4242 4242 4242, cualquier fecha futura y cualquier CVC. Comprueba que:
+   - el pago aparece en Stripe (modo prueba) con los datos de la reserva,
+   - llega el email de confirmación,
+   - esas fechas salen ocupadas en el calendario de la web.
+
+F) EMPEZAR A COBRAR
+   Cambia STRIPE_SECRET_KEY por la clave real (sk_live_...) y vuelve a publicar.
+
+G) DOMINIO PROPIO (noucabanyal.es)
+   1. Comprar el dominio. Ya no hace falta ser español ni residente en España para
+      registrar un ".es": puedes comprarlo en cualquier proveedor, por ejemplo
+      dondominio.com, hostinet.com o IONOS. Precio orientativo: 5-20 €/año
+      (la renovación suele costar algo más que el primer año).
+   2. En Netlify: Domain management > Add a domain > escribe "noucabanyal.es" >
+      Verify > Add domain.
+   3. Apuntar el DNS. La forma más sencilla (recomendada): en Netlify pulsa
+      "Set up Netlify DNS" y te dará 4 nameservers (algo como dns1.p0N.nsone.net).
+      Cópialos y pégalos en tu proveedor del dominio, en el apartado
+      "Nameservers" / "Servidores DNS" (sustituyendo los que traiga por defecto).
+      Así Netlify configura solo todos los registros (raíz y "www").
+        Alternativa, si prefieres mantener el DNS en tu proveedor: crea un
+        registro A en "@" apuntando a 75.2.60.5 y un CNAME en "www" apuntando a
+        tu-sitio.netlify.app (Netlify te da el valor exacto en esa pantalla).
+   4. Espera a que se propague (puede tardar de minutos a 24 h). Netlify emite el
+      candado HTTPS automáticamente en cuanto detecta el dominio apuntando bien;
+      no hay que hacer nada más.
+   5. Si quieres que "www.noucabanyal.es" también funcione, Netlify lo añade solo
+      al dar de alta el dominio raíz.
+
+DÍA A DÍA
+- Nueva reserva: te llega el aviso de Stripe. En el pago verás la casa, las
+  fechas y los datos del huésped (apartado "Metadatos").
+- Cancelar con reembolso: en Stripe, abre el pago > Reembolsar. Las fechas se
+  liberan solas en la web.
+- Anular una reserva sin reembolsar: en el pago, añade el metadato
+  cancelada = si. Las fechas se liberan.
+- Precios: assets/js/precios.js. Ahí cambias el descuento (descuentoDirecto),
+  la limpieza, la estancia mínima y los días de cancelación gratuita. La tabla
+  de precios es una copia del calendario de Booking del 24/09/2026 hasta el
+  29/09/2027; más allá se repite la del año anterior. Conviene actualizarla
+  cuando cambies tarifas en Booking (puedo hacerlo yo).
+
+IMPORTANTE
+- Doble reserva: la web consulta Booking y Airbnb al momento antes de cobrar,
+  pero Booking y Airbnb leen el calendario de la web cada cierto tiempo (suele
+  ser cada pocas horas). Para llegadas cercanas, bloquea también a mano las
+  fechas en Booking/Airbnb al recibir una reserva directa.
+- Completa en assets/js/data.js (apartado "empresa") el CIF, el domicilio social
+  y el email: salen en la página de condiciones. Mientras estén vacíos, se ven
+  marcados como "[pendiente]".
+- Revisa con tu gestoría las condiciones (cancelación, privacidad), la
+  facturación de las reservas directas y el registro de viajeros.
+- Comisión de Stripe: 1,5 % + 0,25 € por pago con tarjeta europea estándar
+  (más en tarjetas premium o de fuera de la UE). Sin cuota mensual.
