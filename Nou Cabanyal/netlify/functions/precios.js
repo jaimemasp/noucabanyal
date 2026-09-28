@@ -5,8 +5,34 @@
 const { tarifas } = require("../lib/tarifas.js");
 const { json, casaValida } = require("../lib/http.js");
 
+/* Precio mínimo por noche de una casa en los próximos N días ("desde X €") */
+function desdeDe(t, dias) {
+  if (!t || !t.dias) return null;
+  let min = Infinity;
+  for (let i = 0; i < Math.min(t.dias.length, dias); i++) {
+    const p = t.dias[i];
+    if (typeof p === "number" && p > 0 && p < min) min = p;
+  }
+  return min === Infinity ? null : min;
+}
+
 exports.handler = async (event) => {
-  const casa = casaValida(event.queryStringParameters && event.queryStringParameters.casa);
+  const q = event.queryStringParameters || {};
+
+  // ?resumen=1 -> precio "desde" de todas las casas, para las tarjetas de la portada
+  if (q.resumen === "1") {
+    const casas = {};
+    await Promise.all([1, 2, 3, 4, 5, 6, 7, 8].map(async (n) => {
+      try {
+        const t = await tarifas(n);
+        const d = desdeDe(t, 60);
+        if (d) casas[n] = { desde: d };
+      } catch (e) { /* esa casa se queda con el precio de respaldo */ }
+    }));
+    return json(200, { casas }, { "Cache-Control": "public, max-age=300" });
+  }
+
+  const casa = casaValida(q.casa);
   if (!casa) return json(400, { error: "casa" });
   try {
     const t = await tarifas(casa);
