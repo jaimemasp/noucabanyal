@@ -1,16 +1,20 @@
 /* Aparthotel Cabanyal — precios de la reserva directa.
-   "base" = precio por noche de cada casa en Booking.com (calendario del 24/09/2026), comprimido:
+
+   PARIDAD DE PRECIOS: el precio bueno viene EN VIVO de Lodgify (/api/precios), que es la misma
+   fuente que fija las tarifas de Booking.com y Airbnb. Esta tabla es solo un respaldo histórico
+   por si Lodgify no responde; el servidor de pagos nunca cobra con ella (si no hay tarifa en vivo,
+   no deja reservar). No la edites esperando cambiar precios: cámbialos en Lodgify.
+
+   "base" = precio por noche en Booking.com (calendario del 24/09/2026), comprimido:
    "131x5" significa 131 € durante 5 noches seguidas, empezando en "inicio".
-   Las casas 3 y 5 no están en Booking: usan la media de las casas 1, 2, 4 y 6.
-   El precio que paga el huésped en la web = base × (1 − descuentoDirecto).
-   Este archivo lo usan la web Y el servidor de pagos (el servidor recalcula siempre el precio). */
+   Las casas 3 y 5 no estaban en Booking: usan la media de las casas 1, 2, 4 y 6. */
 (function (root) {
   var PRECIOS = {
     moneda: "EUR",
     inicio: "2026-09-24",
     fuente: "Booking.com, 24/09/2026",
-    descuentoDirecto: 0.05,       // 5 % menos que la tarifa de Booking
-    limpieza: 0,                  // € por estancia (0 = incluida en el precio)
+    descuentoDirecto: 0,          // 0 = mismo precio que Booking/Airbnb (paridad obligatoria)
+    limpieza: 60,                 // € por estancia (respaldo; el valor bueno viene de Lodgify)
     estanciaMinima: 2,            // noches
     estanciaMaxima: 30,           // noches
     antelacionMinima: 1,          // días: no se puede reservar para el mismo día

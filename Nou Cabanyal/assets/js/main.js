@@ -108,6 +108,8 @@
       "err.max": "La estancia máxima es de {n} noches.", "err.fecha": "Revisa las fechas.", "err.orden": "La salida tiene que ser posterior a la entrada.",
       "err.horizonte": "Todavía no se puede reservar con tanta antelación.", "err.casa": "Apartamento no válido.",
       "err.stripe": "No hemos podido conectar con la pasarela de pago. Inténtalo de nuevo en unos minutos.",
+      "err.precio_no_disponible": "Ahora mismo no podemos confirmar el precio. Inténtalo de nuevo en unos minutos.",
+      "err.precio_cambiado": "El precio de esas fechas acaba de cambiar. Vuelve a cargar la página para ver el precio actualizado.",
       "foot.terms": "Condiciones y privacidad",
       /* Confirmación */
       "ok.meta": "Reserva confirmada · Aparthotel Cabanyal", "ok.title": "¡Reserva confirmada!", "ok.lead": "Gracias, {n}. Hemos recibido tu pago y tu casa te está esperando.",
@@ -206,6 +208,8 @@
       "err.max": "Maximum stay is {n} nights.", "err.fecha": "Please check the dates.", "err.orden": "Check-out must be after check-in.",
       "err.horizonte": "Bookings are not open that far ahead yet.", "err.casa": "Invalid apartment.",
       "err.stripe": "We couldn’t connect to the payment gateway. Please try again in a few minutes.",
+      "err.precio_no_disponible": "We can’t confirm the price right now. Please try again in a few minutes.",
+      "err.precio_cambiado": "The price for those dates has just changed. Please reload the page to see the updated price.",
       "foot.terms": "Terms & privacy",
       "ok.meta": "Booking confirmed · Aparthotel Cabanyal", "ok.title": "Booking confirmed!", "ok.lead": "Thank you, {n}. We’ve received your payment and your apartment is waiting for you.",
       "ok.pending": "We’re confirming your payment", "ok.pending.p": "If you completed the payment, you’ll receive a confirmation email within a few minutes.",
@@ -610,11 +614,16 @@
   function bwCargar(c) {
     if (!ONLINE) { BW.preview = true; return; }
     BW.cargando = true;
-    fetch(API + "/disponibilidad?casa=" + c.n, { cache: "no-store" })
+    var disp = fetch(API + "/disponibilidad?casa=" + c.n, { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
       .then(function (d) { BW.bloqueadas = new Set(d.bloqueadas || []); BW.preview = false; })
-      .catch(function () { BW.preview = true; })
-      .then(function () { BW.cargando = false; bwRender(); });
+      .catch(function () { BW.preview = true; });
+    // Tarifas en vivo de Lodgify: las mismas que Booking y Airbnb, para que el precio coincida.
+    var precios = fetch(API + "/precios?casa=" + c.n, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (d) { if (d && d.disponible) RS.aplicarTarifas(c.n, d); })
+      .catch(function () {});
+    Promise.all([disp, precios]).then(function () { BW.cargando = false; bwRender(); });
   }
 
   function bwQuote() {

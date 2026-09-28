@@ -8,6 +8,25 @@
 
   var RE_FECHA = /^\d{4}-\d{2}-\d{2}$/;
 
+  /* Tarifas en vivo de Lodgify (las mismas de Booking/Airbnb). Las inyecta la web (/api/precios)
+     o el servidor antes de calcular, para que el precio esté siempre en paridad con los canales.
+     { casa: { inicio, dias:[precio|null], limpieza, minStay, moneda, promociones:[{noches,porcentaje}] } } */
+  var VIVO = {};
+  function aplicarTarifas(casa, datos) {
+    if (!datos || !datos.inicio || !datos.dias || !datos.dias.length) return false;
+    VIVO[String(casa)] = datos;
+    return true;
+  }
+  function tarifasDe(casa) { return VIVO[String(casa)] || null; }
+  function tarifaViva(casa, fecha) {
+    var v = VIVO[String(casa)];
+    if (!v) return null;
+    var i = diffDays(v.inicio, fecha);
+    if (!(i >= 0) || i >= v.dias.length) return null;
+    var p = v.dias[i];
+    return typeof p === "number" && p > 0 ? p : null;
+  }
+
   function parse(s) {
     if (typeof s !== "string" || !RE_FECHA.test(s)) return null;
     var d = new Date(s + "T00:00:00Z");
@@ -43,7 +62,10 @@
 
   /* Precio de una noche: { base, precio } en euros, o null si no hay tarifa */
   function precioNoche(casa, fecha) {
-    var t = tabla(casa); if (!t || !parse(fecha)) return null;
+    if (!parse(fecha)) return null;
+    var viva = tarifaViva(casa, fecha);
+    if (viva != null) return { base: viva, precio: viva };   // paridad: mismo precio que Booking/Airbnb
+    var t = tabla(casa); if (!t) return null;
     var i = diffDays(P.inicio, fecha);
     if (i < 0) return null;
     while (i >= t.length) i -= 364;          // más allá de la tabla: misma fecha (y día de la semana) del año anterior
@@ -67,7 +89,9 @@
     if (!parse(q.entrada) || !parse(q.salida)) return { ok: false, error: "fecha" };
     var n = diffDays(q.entrada, q.salida);
     if (n <= 0) return { ok: false, error: "orden" };
-    if (n < P.estanciaMinima) return { ok: false, error: "min", dato: P.estanciaMinima };
+    var viva = tarifasDe(casa) || {};
+    var minNoches = viva.minStay > 0 ? viva.minStay : P.estanciaMinima;
+    if (n < minNoches) return { ok: false, error: "min", dato: minNoches };
     if (n > P.estanciaMaxima) return { ok: false, error: "max", dato: P.estanciaMaxima };
     if (diffDays(hoyStr, q.entrada) < P.antelacionMinima) return { ok: false, error: "antelacion" };
     if (diffDays(hoyStr, q.entrada) > P.horizonte) return { ok: false, error: "horizonte" };
@@ -81,12 +105,19 @@
       detalle.push({ fecha: lista[i], base: pn.base, precio: pn.precio });
       base += pn.base; total += pn.precio;
     }
-    var limpieza = P.limpieza || 0;
-    total += limpieza;
+    var limpieza = typeof viva.limpieza === "number" ? viva.limpieza : (P.limpieza || 0);
+    var alojamiento = total;
+    var pct = 0, promos = viva.promociones || [];
+    for (var j = 0; j < promos.length; j++) {
+      if (promos[j] && n >= promos[j].noches && promos[j].porcentaje > pct) pct = promos[j].porcentaje;
+    }
+    var promocion = pct ? Math.round(alojamiento * pct) / 100 : 0;
+    total = alojamiento - promocion + limpieza;
     return {
       ok: true, casa: casa, entrada: q.entrada, salida: q.salida, huespedes: h, noches: n,
-      detalle: detalle, tarifaBase: base, descuento: base - (total - limpieza), limpieza: limpieza,
-      total: total, totalCentimos: Math.round(total * 100), moneda: P.moneda
+      detalle: detalle, tarifaBase: base, descuento: (base - alojamiento) + promocion,
+      alojamiento: alojamiento, promocion: promocion, limpieza: limpieza,
+      total: total, totalCentimos: Math.round(total * 100), moneda: viva.moneda || P.moneda
     };
   }
 
@@ -112,6 +143,7 @@
   return {
     precios: P, parse: parse, fmt: fmt, addDays: addDays, diffDays: diffDays, hoy: hoy,
     precioNoche: precioNoche, noches: noches, capacidad: capacidad,
-    presupuesto: presupuesto, conflicto: conflicto, desde: desde
+    presupuesto: presupuesto, conflicto: conflicto, desde: desde,
+    aplicarTarifas: aplicarTarifas, tarifasDe: tarifasDe
   };
 });
