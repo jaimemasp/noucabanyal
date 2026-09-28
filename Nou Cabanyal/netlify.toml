@@ -18,3 +18,9 @@
   to = "/404.html"
   status = 404
   force = true
+
+# Las fotos no cambian casi nunca: que el navegador las guarde en caché mucho tiempo
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
