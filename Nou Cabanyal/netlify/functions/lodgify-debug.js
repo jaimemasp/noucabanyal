@@ -21,15 +21,10 @@ exports.handler = async (event) => {
     out.push(item);
   }
 
-  // --- SOLO para depurar el formato real de estos dos endpoints ---
+  // --- SOLO para depurar el formato real de la disponibilidad (sin tocar datos de otras propiedades) ---
   const debug = {};
   try {
-    debug.bookings = await lodgify("GET", "/v2/reservations/bookings?propertyId=777339&page=1&size=3");
-  } catch (e) {
-    debug.bookings_error = { message: e.message, status: e.status, body: e.body };
-  }
-  try {
-    debug.availability = await lodgify("GET", "/v2/availability/777339");
+    debug.availability = await lodgify("GET", "/v2/availability/777339?start=2026-09-28&end=2026-12-31");
   } catch (e) {
     debug.availability_error = { message: e.message, status: e.status, body: e.body };
   }
