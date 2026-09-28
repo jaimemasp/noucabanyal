@@ -1,9 +1,10 @@
-/* Ocupación de cada casa: calendarios de Booking/Airbnb (iCal) + reservas directas pagadas en Stripe. */
+/* Ocupación de cada casa: calendarios de Booking/Airbnb (iCal) + reservas directas pagadas en Stripe + disponibilidad en vivo de Lodgify. */
 "use strict";
 
 const R = require("../../assets/js/reservas.js");
 const ical = require("./ical.js");
 const { listarTodo, configurado } = require("./stripe.js");
+const lodgify = require("./lodgify.js");
 
 const RETENCION_MIN = 35;          // minutos que una reserva a medio pagar bloquea las fechas
 const cache = new Map();           // caché breve mientras la función está "caliente"
@@ -71,7 +72,15 @@ async function nochesBloqueadas(casa, { fresco } = {}) {
   } catch (e) {
     errores.push(`stripe: ${e.message}`);
   }
-  return { bloqueadas: set, parcial: errores.length > 0, errores, sincronizado: fuentes.length > 0 };
+  if (lodgify.configurado()) {
+    try {
+      const bloqueadasLodgify = await cacheado(`lodgify:${casa}`, fresco ? 0 : 120000, () => lodgify.disponibilidadLodgify(casa, R));
+      for (const n of bloqueadasLodgify) set.add(n);
+    } catch (e) {
+      errores.push(`lodgify: ${e.message}`);
+    }
+  }
+  return { bloqueadas: set, parcial: errores.length > 0, errores, sincronizado: fuentes.length > 0 || lodgify.configurado() };
 }
 
 module.exports = { nochesBloqueadas, reservasDirectas, fuentesIcal };
