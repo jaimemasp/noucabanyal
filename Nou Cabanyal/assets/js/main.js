@@ -384,7 +384,7 @@
       if (c.outdoor) meta += "<li>" + icon("sun") + esc(outdoorLabel(c)) + "</li>";
       var title = t("card.house", { n: c.n });
       return (
-        '<article class="card" data-outdoor="' + (c.outdoor ? "1" : "") + '" data-guests="' + c.guests + '">' +
+        '<article class="card" data-casa="' + c.n + '" data-outdoor="' + (c.outdoor ? "1" : "") + '" data-guests="' + c.guests + '">' +
           '<a class="card-media" href="' + casaUrl(c) + '" aria-label="' + esc(t("card.view") + " · " + title) + '">' +
             '<img src="' + esc(photoUrl(c, 0, "card")) + '" alt="' + esc(title) + '" loading="lazy" decoding="async">' +
             '<span class="card-count">' + icon("camera") + esc(t("card.photos", { n: c.photos.length })) + "</span>" +
@@ -567,9 +567,7 @@
     // Reserva directa: calendario, precio y pago
     bwRender();
     var hb = $("#header-book"); if (hb) { hb.href = "#reservar"; hb.removeAttribute("target"); hb.removeAttribute("rel"); }
-    var desdeTxt = RS ? t("bw.from") + " " + RS.desde(c.n, 90) + " € " + t("bw.night") : title;
-    $("#mobile-book").innerHTML = "<div><strong>" + esc(desdeTxt) + "</strong><span>" + esc(title + " · " + t("casa.fact.guests", { n: c.guests })) +
-      '</span></div><a class="btn btn-accent btn-sm" href="#reservar">' + esc(t("card.book")) + "</a>";
+    bwBarraMovil(c, title);
 
     // Otras casas
     $("#others").innerHTML = CASAS.filter(function (o) { return o.n !== c.n; }).map(function (o) {
@@ -611,6 +609,34 @@
     });
   }
 
+  /* Barra fija inferior de la ficha de casa (se repinta cuando llegan las tarifas en vivo) */
+  function bwBarraMovil(c, title) {
+    var box = $("#mobile-book");
+    if (!box || !c) return;
+    title = title || t("card.house", { n: c.n });
+    var desdeTxt = RS ? t("bw.from") + " " + RS.desde(c.n, 90) + " € " + t("bw.night") : title;
+    box.innerHTML = "<div><strong>" + esc(desdeTxt) + "</strong><span>" + esc(title + " · " + t("casa.fact.guests", { n: c.guests })) +
+      '</span></div><a class="btn btn-accent btn-sm" href="#reservar">' + esc(t("card.book")) + "</a>";
+  }
+
+  /* Portada: refresca el "desde X €" de las tarjetas con las tarifas reales de Lodgify */
+  function refrescarDesdeTarjetas() {
+    var tarjetas = document.querySelectorAll(".card[data-casa]");
+    if (!tarjetas.length || !ONLINE || !RS) return;
+    fetch(API + "/precios?resumen=1", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (d) {
+        var casas = (d && d.casas) || {};
+        Array.prototype.forEach.call(tarjetas, function (art) {
+          var n = art.getAttribute("data-casa");
+          var p = casas[n] && casas[n].desde;
+          var el = art.querySelector(".card-from");
+          if (p && el) el.innerHTML = t("card.from", { p: p });
+        });
+      })
+      .catch(function () {});
+  }
+
   function bwCargar(c) {
     if (!ONLINE) { BW.preview = true; return; }
     BW.cargando = true;
@@ -623,7 +649,7 @@
       .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
       .then(function (d) { if (d && d.disponible) RS.aplicarTarifas(c.n, d); })
       .catch(function () {});
-    Promise.all([disp, precios]).then(function () { BW.cargando = false; bwRender(); });
+    Promise.all([disp, precios]).then(function () { BW.cargando = false; bwRender(); bwBarraMovil(c); });
   }
 
   function bwQuote() {
@@ -898,7 +924,7 @@
     if (IS_CASA) { renderCasa(); }
     else if (IS_OK) { renderOk(); }
     else if (IS_COND) { renderCond(); }
-    else { renderBadges(); renderCards(); renderAmenities(); renderMosaic(); renderLocation(); renderBooking(); }
+    else { renderBadges(); renderCards(); refrescarDesdeTarjetas(); renderAmenities(); renderMosaic(); renderLocation(); renderBooking(); }
     store("nc-lang", lang);
   }
   function initialLang() {
