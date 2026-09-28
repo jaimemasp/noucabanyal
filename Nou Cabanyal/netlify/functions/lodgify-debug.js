@@ -1,7 +1,7 @@
 /* Diagnóstico temporal de Lodgify (protegido por ICAL_EXPORT_TOKEN).
    ?token=X&propiedad=1&casa=N              -> datos de la propiedad (verificar el mapeo casa -> Lodgify)
    ?token=X&disp=1&casa=N[&desde&hasta]     -> respuesta CRUDA de disponibilidad
-   ?token=X&tarifas=1&casa=N[&desde&hasta]  -> prueba varios endpoints de tarifas y devuelve lo que funcione
+   ?token=X&tarifas=1&casa=N[&desde&hasta]  -> prueba endpoints de tarifas\n   ?token=X&quote=1&casa=N[&entrada&salida&huespedes] -> presupuesto real de Lodgify para una estancia
    ?token=X&crear_prueba=1[&entrada&salida] -> crea una reserva de prueba
    ?token=X&cancelar=<id>                   -> cancela una reserva por id            */
 "use strict";
@@ -39,16 +39,26 @@ exports.handler = async (event) => {
 
   if (q.tarifas === "1") {
     const rutas = [
-      `/v2/rates/calendar?HouseId=${propId}&StartDate=${desde}&EndDate=${hasta}`,
-      `/v2/rates/calendar?propertyId=${propId}&startDate=${desde}&endDate=${hasta}`,
-      `/v2/rates?HouseId=${propId}&StartDate=${desde}&EndDate=${hasta}`,
-      `/v1/rates?HouseId=${propId}&StartDate=${desde}&EndDate=${hasta}`,
+      `/v2/rates/calendar?RoomTypeId=${roomId}&HouseId=${propId}&StartDate=${desde}&EndDate=${hasta}`,
+      `/v2/rates/calendar?HouseId=${propId}&RoomTypeId=${roomId}&StartDate=${desde}&EndDate=${hasta}&BookabilityType=Bookable`,
+      `/v2/rates/calendar?houseId=${propId}&roomTypeId=${roomId}&startDate=${desde}&endDate=${hasta}`,
       `/v2/rates/settings?HouseId=${propId}`,
-      `/v2/quote/${propId}?arrival=${desde}&departure=${hasta}&roomTypes%5B0%5D.Id=${roomId}&roomTypes%5B0%5D.People=2`,
     ];
     const intentos = [];
     for (const r of rutas) intentos.push(await probar("GET", r));
     return json(200, { casa, propId, roomId, desde, hasta, intentos });
+  }
+
+  if (q.quote === "1") {
+    const entrada = q.entrada || dentroDe(60);
+    const salida = q.salida || dentroDe(62);
+    const gente = q.huespedes || "2";
+    const rutas = [
+      `/v2/quote/${propId}?arrival=${entrada}&departure=${salida}&roomTypes%5B0%5D.Id=${roomId}&roomTypes%5B0%5D.People=${gente}`,
+    ];
+    const intentos = [];
+    for (const r of rutas) intentos.push(await probar("GET", r));
+    return json(200, { casa, propId, roomId, entrada, salida, gente, intentos });
   }
 
   if (q.cancelar) {
@@ -67,5 +77,5 @@ exports.handler = async (event) => {
     }
   }
 
-  return json(200, { info: "parámetros: propiedad=1 | disp=1 | tarifas=1 | crear_prueba=1 | cancelar=<id>   (+ casa, desde, hasta)" });
+  return json(200, { info: "parámetros: propiedad=1 | disp=1 | tarifas=1 | quote=1 | crear_prueba=1 | cancelar=<id>   (+ casa, desde, hasta, entrada, salida, huespedes)" });
 };
