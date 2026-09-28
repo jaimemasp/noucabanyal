@@ -58,7 +58,8 @@ async function lodgify(method, path, body) {
 }
 
 /* Disponibilidad en vivo de una casa -> Set de noches "bloqueadas" (YYYY-MM-DD, noche de entrada)
-   R.noches(inicio, fin) es la misma función que ya usa el resto del sitio para iCal y Stripe. */
+   OJO: en Lodgify, el "end" de un periodo es el ULTIMO DIA OCUPADO (inclusive), no la fecha de salida.
+   Por eso sumamos un día antes de pasarlo a R.noches(), que excluye el día final. */
 async function disponibilidadLodgify(casa, R, { desde, hasta } = {}) {
   const propId = propiedadDeCasa(casa);
   if (!propId) return new Set();
@@ -68,7 +69,7 @@ async function disponibilidadLodgify(casa, R, { desde, hasta } = {}) {
   const set = new Set();
   for (const habitacion of resp || []) {
     for (const p of habitacion.periods || []) {
-      if (p.available === 0) for (const n of R.noches(p.start, p.end)) set.add(n);
+      if (p.available === 0) for (const n of R.noches(p.start, R.addDays(p.end, 1))) set.add(n);
     }
   }
   return set;
