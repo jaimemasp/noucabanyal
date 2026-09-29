@@ -1,14 +1,18 @@
-/* POST /api/stripe-webhook  ->  Stripe avisa aquí de cada pago completado.
+/* POST /api/stripe-webhook  ->  Stripe avisa aquí de cada pago completado y de cada reembolso.
    Sirve de red de seguridad: si el huésped cierra el navegador justo después de pagar y nunca
    llega a la página de confirmación, la reserva se empuja igualmente a Lodgify desde aquí, así que
    las fechas quedan bloqueadas en Booking y Airbnb pase lo que pase con su navegador.
+
+   También escucha charge.refunded: si devuelves el importe ENTERO de una reserva, la reserva se
+   cancela sola en Lodgify y esas noches vuelven a venderse en los tres sitios. Los reembolsos
+   parciales no la tocan, porque ahí el huésped sigue viniendo.
 
    Necesita la variable STRIPE_WEBHOOK_SECRET (el "signing secret" del endpoint en Stripe).
    Sin ella no acepta nada: más vale no procesar que procesar algo sin verificar. */
 "use strict";
 const crypto = require("crypto");
 const { stripe } = require("../lib/stripe.js");
-const { empujarALodgify } = require("../lib/empujar.js");
+const { empujarALodgify, cancelarPorReembolso } = require("../lib/empujar.js");
 
 const TOLERANCIA_S = 300;   // margen de reloj: se rechazan eventos de hace más de 5 minutos
 
@@ -52,20 +56,35 @@ exports.handler = async (event) => {
 
   let evt;
   try { evt = JSON.parse(cuerpo); } catch (e) { return { statusCode: 400, body: "json" }; }
-  if (evt.type !== "checkout.session.completed") return { statusCode: 200, body: "ignorado" };
 
-  const id = evt.data && evt.data.object && evt.data.object.id;
+  const obj = evt.data && evt.data.object;
+  const id = obj && obj.id;
   if (!id) return { statusCode: 200, body: "sin id" };
 
-  try {
-    // El evento no trae el payment_intent expandido: lo pedimos para poder marcar la reserva.
-    const s = await stripe("GET", `/checkout/sessions/${id}`, { expand: ["payment_intent"] });
-    const res = await empujarALodgify(s);
-    console.log("Webhook Stripe:", id, JSON.stringify(res));
-  } catch (e) {
-    // Devolvemos 500 a propósito: Stripe reintentará el aviso más tarde.
-    console.error("Webhook Stripe:", id, e.message);
-    return { statusCode: 500, body: "error" };
+  if (evt.type === "checkout.session.completed") {
+    try {
+      // El evento no trae el payment_intent expandido: lo pedimos para poder marcar la reserva.
+      const s = await stripe("GET", `/checkout/sessions/${id}`, { expand: ["payment_intent"] });
+      const res = await empujarALodgify(s);
+      console.log("Webhook Stripe (pago):", id, JSON.stringify(res));
+    } catch (e) {
+      // Devolvemos 500 a propósito: Stripe reintentará el aviso más tarde.
+      console.error("Webhook Stripe (pago):", id, e.message);
+      return { statusCode: 500, body: "error" };
+    }
+    return { statusCode: 200, body: "ok" };
   }
-  return { statusCode: 200, body: "ok" };
+
+  if (evt.type === "charge.refunded") {
+    try {
+      const res = await cancelarPorReembolso(obj);
+      console.log("Webhook Stripe (reembolso):", id, JSON.stringify(res));
+    } catch (e) {
+      console.error("Webhook Stripe (reembolso):", id, e.message);
+      return { statusCode: 500, body: "error" };
+    }
+    return { statusCode: 200, body: "ok" };
+  }
+
+  return { statusCode: 200, body: "ignorado" };
 };
