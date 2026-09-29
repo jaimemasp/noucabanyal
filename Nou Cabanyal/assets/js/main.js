@@ -13,7 +13,9 @@
   var RS = window.NC_RESERVAS || null;
   var API = CFG.api || "/api";
   var ONLINE = /^https?:$/.test(location.protocol);
-  function cancelHoras() { return RS ? RS.precios.cancelacionGratisHoras : 48; }
+  function cancelDias() { return RS ? RS.precios.cancelacionGratisDias : 5; }
+  function limiteCancelacion(entrada) { return RS && entrada ? RS.addDays(entrada, -cancelDias()) : null; }
+  function cancelable(entrada) { var l = limiteCancelacion(entrada); return !!l && l > RS.hoy(); }
 
   /* ------------------------------------------------------------------
      TEXTOS (ES / EN)
@@ -56,7 +58,7 @@
       "direct.lead": "Sin intermediarios: eliges tu casa y tus fechas, pagas de forma segura y hablas directamente con nosotros.",
       "direct.b1.t": "Trato directo", "direct.b1.p": "Sin comisiones de intermediarios: hablas y reservas directamente con nosotros.",
       "direct.b2.t": "Pago seguro", "direct.b2.p": "Con tarjeta a través de Stripe. Recibes la confirmación al momento por email.",
-      "direct.b3.t": "Cancelación gratuita", "direct.b3.p": "Hasta {h} horas antes de tu llegada, con reembolso completo.",
+      "direct.b3.t": "Cancelación gratuita", "direct.b3.p": "Hasta {d} días antes de tu llegada, con reembolso completo.",
       "direct.cta": "Elige tu casa y tus fechas",
       "book.direct.t": "¿Tienes dudas?", "book.direct.p": "Escríbenos y te ayudamos a elegir el apartamento y las fechas.",
       "book.wa": "WhatsApp", "book.mail": "Email", "book.call": "Llamar", "book.ig": "Instagram",
@@ -92,7 +94,7 @@
       "bw.hint.in": "Elige el día de entrada en el calendario.", "bw.hint.out": "Ahora elige el día de salida.",
       "bw.min": "La estancia mínima es de {n} noches.", "bw.max": "La estancia máxima es de {n} noches.", "bw.gap": "Hay noches ocupadas entre esas fechas. Elige otra entrada.",
       "bw.nights": "{n} noches", "bw.clean": "Limpieza", "bw.total": "Total",
-      "bw.cta": "Reservar", "bw.secure": "Pago seguro con tarjeta a través de Stripe", "bw.cancel": "Cancelación gratuita hasta {h} horas antes de la llegada",
+      "bw.cta": "Reservar", "bw.secure": "Pago seguro con tarjeta a través de Stripe", "bw.cancel": "Cancelación gratuita hasta {d} días antes de la llegada",
       "bw.clear": "Borrar fechas",
       "bw.preview": "Vista previa: la disponibilidad real y el pago se activan cuando la web está publicada.",
       "bw.loading": "Comprobando disponibilidad…", "bw.cancelled": "Has salido del pago: tu reserva no se ha completado y no se te ha cobrado nada.",
@@ -100,6 +102,8 @@
       "fm.arrival": "Hora estimada de llegada", "fm.msg": "Mensaje (opcional)", "fm.accept": "He leído y acepto las <a href=\"condiciones.html\" target=\"_blank\">condiciones de reserva y la política de privacidad</a>.",
       "fm.pay": "Pagar {t} € con tarjeta", "fm.back": "Volver", "fm.sending": "Preparando el pago seguro…",
       "fm.note": "Te llevaremos a la página de pago segura de Stripe. No guardamos los datos de tu tarjeta.",
+      "fm.cancel.si": "Cancelación gratuita hasta el {f}: te devolvemos el 100 %. A partir de esa fecha la reserva no es reembolsable.",
+      "fm.cancel.no": "Esta reserva no es reembolsable: quedan menos de {d} días para tu llegada.",
       "err.nombre": "Escribe tu nombre y apellidos.", "err.email": "Revisa el email.", "err.telefono": "Revisa el teléfono.", "err.condiciones": "Tienes que aceptar las condiciones.",
       "err.ocupado": "Lo sentimos: esas fechas se acaban de ocupar. Elige otras, por favor.", "err.sin_comprobar": "Ahora mismo no podemos comprobar la disponibilidad. Inténtalo de nuevo en unos minutos.",
       "err.pagos_no_configurados": "Los pagos online todavía no están activados. Escríbenos para reservar.", "err.min": "La estancia mínima es de {n} noches.",
@@ -118,6 +122,7 @@
       "ok.casa": "Apartamento", "ok.dates": "Fechas", "ok.guests": "Huéspedes", "ok.total": "Total pagado", "ok.email": "Confirmación enviada a",
       "ok.next": "Próximos pasos", "ok.n1": "Recibirás el recibo del pago por email.", "ok.n2": "Antes de tu llegada te pediremos los datos de los viajeros (registro obligatorio por ley) y te enviaremos las instrucciones del check-in autónomo.",
       "ok.n3": "Entrada: {in}. Salida: {out}.", "ok.home": "Volver a la web",
+      "ok.cancel": "Cancelación", "ok.cancel.si": "Gratuita hasta el {f}", "ok.cancel.no": "No reembolsable",
       "casa.others": "Otros apartamentos",
       "casa.fact.guests": "Hasta {n} personas", "spec.bath": "Baño privado", "casa.fact.m2": "{n} m²", "casa.fact.in": "Entrada {t} h"
     },
@@ -158,7 +163,7 @@
       "direct.lead": "No middlemen: choose your apartment and dates, pay securely and deal with us directly.",
       "direct.b1.t": "Direct and simple", "direct.b1.p": "No middleman fees: you deal and book directly with us.",
       "direct.b2.t": "Secure payment", "direct.b2.p": "By card through Stripe. You get your confirmation by email straight away.",
-      "direct.b3.t": "Free cancellation", "direct.b3.p": "Up to {h} hours before arrival, with a full refund.",
+      "direct.b3.t": "Free cancellation", "direct.b3.p": "Up to {d} days before arrival, with a full refund.",
       "direct.cta": "Choose your apartment and dates",
       "book.direct.t": "Any questions?", "book.direct.p": "Message us and we’ll help you choose the apartment and dates.",
       "book.wa": "WhatsApp", "book.mail": "Email", "book.call": "Call", "book.ig": "Instagram",
@@ -192,7 +197,7 @@
       "bw.hint.in": "Choose your check-in day on the calendar.", "bw.hint.out": "Now choose your check-out day.",
       "bw.min": "Minimum stay is {n} nights.", "bw.max": "Maximum stay is {n} nights.", "bw.gap": "Some nights in between are booked. Choose another check-in date.",
       "bw.nights": "{n} nights", "bw.clean": "Cleaning", "bw.total": "Total",
-      "bw.cta": "Book now", "bw.secure": "Secure card payment through Stripe", "bw.cancel": "Free cancellation up to {h} hours before arrival",
+      "bw.cta": "Book now", "bw.secure": "Secure card payment through Stripe", "bw.cancel": "Free cancellation up to {d} days before arrival",
       "bw.clear": "Clear dates",
       "bw.preview": "Preview: live availability and payment are enabled once the website is published.",
       "bw.loading": "Checking availability…", "bw.cancelled": "You left the payment page: your booking was not completed and you have not been charged.",
@@ -200,6 +205,8 @@
       "fm.arrival": "Estimated arrival time", "fm.msg": "Message (optional)", "fm.accept": "I have read and accept the <a href=\"condiciones.html\" target=\"_blank\">booking terms and privacy policy</a>.",
       "fm.pay": "Pay €{t} by card", "fm.back": "Back", "fm.sending": "Preparing secure payment…",
       "fm.note": "You will be taken to Stripe’s secure payment page. We never store your card details.",
+      "fm.cancel.si": "Free cancellation until {f}: we refund 100 %. After that date the booking is non-refundable.",
+      "fm.cancel.no": "This booking is non-refundable: your arrival is less than {d} days away.",
       "err.nombre": "Please enter your full name.", "err.email": "Please check your email.", "err.telefono": "Please check your phone number.", "err.condiciones": "You need to accept the terms.",
       "err.ocupado": "Sorry, those dates have just been booked. Please choose others.", "err.sin_comprobar": "We can’t check availability right now. Please try again in a few minutes.",
       "err.pagos_no_configurados": "Online payment is not enabled yet. Please contact us to book.", "err.min": "Minimum stay is {n} nights.",
@@ -217,6 +224,7 @@
       "ok.casa": "Apartment", "ok.dates": "Dates", "ok.guests": "Guests", "ok.total": "Total paid", "ok.email": "Confirmation sent to",
       "ok.next": "Next steps", "ok.n1": "You’ll receive your payment receipt by email.", "ok.n2": "Before you arrive we’ll ask for your travellers’ details (a legal requirement in Spain) and send you the self check-in instructions.",
       "ok.n3": "Check-in: {in}. Check-out: {out}.", "ok.home": "Back to the website",
+      "ok.cancel": "Cancellation", "ok.cancel.si": "Free until {f}", "ok.cancel.no": "Non-refundable",
       "casa.others": "Other apartments",
       "casa.fact.guests": "Up to {n} guests", "spec.bath": "Private bathroom", "casa.fact.m2": "{n} m²", "casa.fact.in": "Check-in {t}"
     }
@@ -465,7 +473,7 @@
     var cards = [
       ["star", t("direct.b1.t"), t("direct.b1.p")],
       ["shield", t("direct.b2.t"), t("direct.b2.p")],
-      ["clock", t("direct.b3.t"), t("direct.b3.p", { h: cancelHoras() })]
+      ["clock", t("direct.b3.t"), t("direct.b3.p", { d: cancelDias() })]
     ];
     var html = cards.map(function (c) {
       return '<div class="book-card benefit">' + icon(c[0]) + "<h3>" + esc(c[1]) + "</h3><p>" + esc(c[2]) + "</p></div>";
@@ -723,7 +731,7 @@
     }
     h += '<div class="bw-actions"><button type="button" class="btn btn-accent bw-go" id="bw-go"' + (q && q.ok ? "" : " disabled") + ">" + esc(t("bw.cta")) + (q && q.ok ? " · " + euros(q.total) : "") + "</button>" +
       (BW.entrada ? '<button type="button" class="bw-clear" id="bw-clear">' + esc(t("bw.clear")) + "</button>" : "") + "</div>";
-    h += '<ul class="bw-trust"><li>' + icon("shield") + esc(t("bw.secure")) + "</li><li>" + icon("check") + '<a href="condiciones.html">' + esc(t("bw.cancel", { h: cancelHoras() })) + "</a></li></ul>";
+    h += '<ul class="bw-trust"><li>' + icon("shield") + esc(t("bw.secure")) + "</li><li>" + icon("check") + '<a href="condiciones.html">' + esc(t("bw.cancel", { d: cancelDias() })) + "</a></li></ul>";
     if (BW.preview) h += '<p class="bw-preview">' + esc(t("bw.preview")) + "</p>";
     box.innerHTML = h;
     if (focoD) { var f = box.querySelector('[data-d="' + focoD + '"]'); if (f && !f.disabled) f.focus(); }
@@ -782,6 +790,8 @@
         '<h2 id="fm-title">' + esc(t("fm.title")) + "</h2>" +
         '<div class="fm-resumen"><strong>' + esc(t("card.house", { n: c.n })) + "</strong><span>" + esc(fechaCorta(q.entrada) + " → " + fechaCorta(q.salida)) + " · " + esc(t("bw.nights", { n: q.noches })) + " · " +
           esc(q.huespedes === 1 ? t("bw.guest1") : t("bw.guestN", { n: q.huespedes })) + '</span><b>' + euros(q.total) + "</b></div>" +
+        '<p class="fm-cancel' + (cancelable(q.entrada) ? "" : " is-no") + '">' + icon(cancelable(q.entrada) ? "check" : "clock") +
+          esc(cancelable(q.entrada) ? t("fm.cancel.si", { f: fechaLarga(limiteCancelacion(q.entrada)) }) : t("fm.cancel.no", { d: cancelDias() })) + "</p>" +
         '<form class="fm" novalidate>' +
           '<label class="fm-full"><span>' + esc(t("fm.name")) + ' *</span><input name="nombre" autocomplete="name" required maxlength="80"></label>' +
           '<label><span>' + esc(t("fm.email")) + ' *</span><input name="email" type="email" autocomplete="email" required maxlength="120"></label>' +
@@ -883,6 +893,7 @@
         "<div><dt>" + esc(t("ok.guests")) + "</dt><dd>" + d.huespedes + "</dd></div>" +
         "<div><dt>" + esc(t("ok.total")) + "</dt><dd>" + euros(d.total) + "</dd></div>" +
         (d.email ? "<div><dt>" + esc(t("ok.email")) + "</dt><dd>" + esc(d.email) + "</dd></div>" : "") +
+        "<div><dt>" + esc(t("ok.cancel")) + "</dt><dd>" + esc(cancelable(d.entrada) ? t("ok.cancel.si", { f: fechaLarga(limiteCancelacion(d.entrada)) }) : t("ok.cancel.no")) + "</dd></div>" +
       "</dl>" +
       "<h2>" + esc(t("ok.next")) + '</h2><ol class="ok-steps"><li>' + esc(t("ok.n1")) + "</li><li>" + esc(t("ok.n2")) + "</li>" +
         (casa ? "<li>" + esc(t("ok.n3", { "in": cap1(checkinText(casa)), out: checkoutText(casa) })) + "</li>" : "") + "</ol>" + inicio;
@@ -901,7 +912,7 @@
       el.textContent = v || (lang === "es" ? "[pendiente]" : "[pending]");
       el.classList.toggle("pend", !v);
     });
-    $all('[data-var="cancel"]').forEach(function (el) { el.textContent = cancelHoras(); });
+    $all('[data-var="cancel"]').forEach(function (el) { el.textContent = cancelDias(); });
   }
 
   /* ------------------------------------------------------------------
