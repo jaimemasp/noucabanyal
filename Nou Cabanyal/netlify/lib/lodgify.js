@@ -97,6 +97,14 @@ async function crearReserva({ casa, entrada, salida, huespedes, nombre, email, t
   return lodgify("POST", "/v1/reservation/booking", payload);
 }
 
+/* Cancela una reserva en Lodgify (libera esas noches en Booking, Airbnb y la web).
+   OJO: la ruta buena es la de v1. La equivalente en v2 devuelve 405. */
+async function cancelarReserva(bookingId) {
+  const id = String(bookingId || "").trim();
+  if (!id) { const e = new Error("Falta el id de la reserva"); e.code = "sin_booking_id"; throw e; }
+  return lodgify("DELETE", `/v1/reservation/booking/${encodeURIComponent(id)}`);
+}
+
 /* Tarifas diarias en vivo de una casa (las mismas que Lodgify publica en Booking y Airbnb).
    Devuelve { inicio, dias:[precio|null], limpieza, minStay, moneda, promociones, checkIn, checkOut }. */
 async function tarifasLodgify(casa, R, { desde, hasta } = {}) {
@@ -173,6 +181,6 @@ async function presupuestoLodgify({ casa, entrada, salida, huespedes }) {
 
 module.exports = {
   lodgify, configurado, CASA_A_PROPIEDAD, PROPIEDAD_A_CASA, CASA_A_TIPO_HABITACION,
-  propiedadDeCasa, casaDePropiedad, tipoHabitacionDeCasa, disponibilidadLodgify, crearReserva,
+  propiedadDeCasa, casaDePropiedad, tipoHabitacionDeCasa, disponibilidadLodgify, crearReserva, cancelarReserva,
   tarifasLodgify, presupuestoLodgify,
 };

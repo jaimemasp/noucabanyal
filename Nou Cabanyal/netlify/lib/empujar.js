@@ -48,4 +48,38 @@ async function empujarALodgify(s) {
   return { ok: true, id: bookingId };
 }
 
-module.exports = { empujarALodgify };
+/* Cancela en Lodgify la reserva asociada a un cargo de Stripe que se ha reembolsado ENTERO.
+   Los reembolsos parciales no la tocan: ahí el huésped sigue viniendo y las noches deben
+   seguir bloqueadas. La marca lodgify_cancelada evita repetirlo si Stripe reintenta el aviso. */
+async function cancelarPorReembolso(cargo) {
+  if (!cargo || typeof cargo !== "object") return { ok: false, motivo: "sin_cargo" };
+
+  const cobrado = Number(cargo.amount) || 0;
+  const devuelto = Number(cargo.amount_refunded) || 0;
+  if (!cargo.refunded || devuelto < cobrado || cobrado === 0) {
+    return { ok: false, motivo: "reembolso_parcial", devuelto, cobrado };
+  }
+
+  const piId = typeof cargo.payment_intent === "string"
+    ? cargo.payment_intent
+    : (cargo.payment_intent && cargo.payment_intent.id);
+  if (!piId) return { ok: false, motivo: "sin_payment_intent" };
+
+  const pi = await stripe("GET", `/payment_intents/${piId}`);
+  const meta = (pi && pi.metadata) || {};
+
+  if (meta.origen !== "web") return { ok: false, motivo: "no_es_web" };
+  if (meta.lodgify_cancelada) return { ok: true, motivo: "ya_cancelada", id: meta.lodgify_booking_id };
+
+  const bookingId = meta.lodgify_booking_id;
+  if (!bookingId) return { ok: false, motivo: "sin_reserva_en_lodgify" };
+  if (!lodgify.configurado()) return { ok: false, motivo: "lodgify_no_configurado" };
+
+  await lodgify.cancelarReserva(bookingId);
+
+  // Marca para no intentarlo dos veces si Stripe reenvía el evento.
+  await stripe("POST", `/payment_intents/${piId}`, { metadata: { lodgify_cancelada: "1" } });
+  return { ok: true, id: bookingId };
+}
+
+module.exports = { empujarALodgify, cancelarPorReembolso };
