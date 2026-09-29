@@ -3,7 +3,7 @@ window.NC_CONFIG = {
   /* Contacto directo: rellena lo que quieras mostrar. Si un campo está vacío, su botón no aparece. */
   whatsapp: "34671449274",        // Solo números con prefijo, sin + ni espacios. Ej: "34600111222"
   telefono: "+34 671 44 92 74",   // Tal como quieres que se vea. Ej: "+34 600 111 222"
-  email: "",           // Ej: "reservas@noucabanyal.com"
+  email: "info@noucabanyal.es",
   instagram: "",       // URL completa del perfil, opcional
 
   /* Datos de la empresa (salen en la página de condiciones). OBLIGATORIO rellenarlos antes de cobrar. */
@@ -12,7 +12,7 @@ window.NC_CONFIG = {
     cif: "B13863295",
     domicilio: "C/ Conde Salvatierra, 30, 8ª, 46004 València",
     telefono: "+34 671 44 92 74",
-    email: ""          // Email de contacto para reservas y privacidad — falta por rellenar
+    email: "info@noucabanyal.es"   // Email de contacto para reservas y privacidad
   },
 
   /* Dirección de las funciones de pago (no tocar si la web está en Netlify) */
