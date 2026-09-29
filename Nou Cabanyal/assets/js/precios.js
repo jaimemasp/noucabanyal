@@ -16,7 +16,7 @@
     descuentoDirecto: 0,          // 0 = mismo precio que Booking/Airbnb (paridad obligatoria)
     limpieza: 60,                 // € por estancia (respaldo; el valor bueno viene de Lodgify)
     estanciaMinima: 2,            // noches
-    estanciaMaxima: 30,           // noches
+    estanciaMaxima: 365,          // noches (igual que el límite de Lodgify)
     antelacionMinima: 1,          // días: no se puede reservar para el mismo día
     horizonte: 365,               // días hacia delante que se pueden reservar
     cancelacionGratisDias: 5,     // cancelación gratuita hasta X días antes de la llegada
