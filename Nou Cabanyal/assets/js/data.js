@@ -3,7 +3,7 @@ window.NC_CONFIG = {
   /* Contacto directo: rellena lo que quieras mostrar. Si un campo está vacío, su botón no aparece. */
   whatsapp: "34671449274",        // Solo números con prefijo, sin + ni espacios. Ej: "34600111222"
   telefono: "+34 671 44 92 74",   // Tal como quieres que se vea. Ej: "+34 600 111 222"
-  email: "",                     // temporal: el buzon no recibe todavia; sin esto no sale el boton de email
+  email: "info@noucabanyal.es",
   instagram: "",       // URL completa del perfil, opcional
 
   /* Datos de la empresa (salen en la página de condiciones). OBLIGATORIO rellenarlos antes de cobrar. */
@@ -12,7 +12,7 @@ window.NC_CONFIG = {
     cif: "E70737358",
     domicilio: "C/ Poeta Querol, 1, pta 4, 46002 València",
     telefono: "+34 671 44 92 74",
-    email: ""                      // temporal: contacto por telefono/WhatsApp mientras el buzon no recibe
+    email: "info@noucabanyal.es"
   },
 
   /* Dirección de las funciones de pago (no tocar si la web está en Netlify) */
