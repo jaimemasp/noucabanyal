@@ -908,7 +908,7 @@
     var E = CFG.empresa || {};
     $all("[data-emp]").forEach(function (el) {
       var k = el.getAttribute("data-emp");
-      var v = E[k] || (k === "nombre" ? "Nou Cabanyal SL" : k === "email" ? (CFG.email || "") : "");
+      var v = E[k] || (k === "nombre" ? "Vicente Brull 73 Cabanyal CB" : k === "email" ? (CFG.email || "") : "");
       el.textContent = v || (lang === "es" ? "[pendiente]" : "[pending]");
       el.classList.toggle("pend", !v);
     });

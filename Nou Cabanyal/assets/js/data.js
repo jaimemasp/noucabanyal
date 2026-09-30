@@ -8,9 +8,9 @@ window.NC_CONFIG = {
 
   /* Datos de la empresa (salen en la página de condiciones). OBLIGATORIO rellenarlos antes de cobrar. */
   empresa: {
-    nombre: "Nou Cabanyal SL",
-    cif: "B13863295",
-    domicilio: "C/ Conde Salvatierra, 30, 8ª, 46004 València",
+    nombre: "Vicente Brull 73 Cabanyal CB",
+    cif: "E70737358",
+    domicilio: "C/ Poeta Querol, 1, pta 4, 46002 València",
     telefono: "+34 671 44 92 74",
     email: ""                      // temporal: contacto por telefono/WhatsApp mientras el buzon no recibe
   },
