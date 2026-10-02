@@ -18,6 +18,8 @@
       hola2: "El código empieza por NC y lo tienes en la página de confirmación y en el recibo del pago.",
       ota: "¿Reservaste en Booking.com o Airbnb? Entonces se gestiona desde su web o app.",
       codigo: "Código de reserva", email: "Email de la reserva", buscar: "Buscar mi reserva",
+      sinCodigo: "¿No tienes el código?", sinCodigoPide: "Sin problema. Escribe el email con el que reservaste y te mandamos tu código.", enviarCodigo: "Enviarme el código", volverLogin: "Ya tengo el código",
+      codigoEnviado: "Si hay alguna reserva a nombre de ese email, te acabamos de enviar el código. Mira tu bandeja de entrada (y la carpeta de spam). Cuando lo tengas, escríbelo aquí.",
       buscando: "Buscando tu reserva…", cargando: "Un momento…",
       encontrada: "Aquí tienes tu reserva, {n}:", encontrada0: "Aquí tienes tu reserva:",
       casa: "Casa {n}", fechas: "Fechas", noches1: "1 noche", nochesN: "{n} noches", huespedes: "Huéspedes",
@@ -75,7 +77,7 @@
         lodgify: "No hemos podido completar la operación en nuestro sistema de reservas. No se ha cobrado ni devuelto nada. Escríbenos y lo hacemos a mano.",
         telefono: "Ese teléfono no parece válido.", servicio: "Algo ha fallado por nuestra parte. Inténtalo de nuevo en unos minutos o escríbenos.",
         pagos_no_configurados: "La gestión online no está disponible ahora mismo. Escríbenos y te ayudamos.",
-        red: "No hay conexión. Comprueba tu internet y vuelve a probar.", faltan: "Rellena el código y el email."
+        red: "No hay conexión. Comprueba tu internet y vuelve a probar.", faltan: "Rellena el código y el email.", email: "Ese email no parece válido."
       }
     },
     en: {
@@ -86,6 +88,8 @@
       hola2: "The code starts with NC. You’ll find it on the confirmation page and on your payment receipt.",
       ota: "Did you book on Booking.com or Airbnb? Then please manage it on their website or app.",
       codigo: "Booking code", email: "Booking email", buscar: "Find my booking",
+      sinCodigo: "Don’t have your code?", sinCodigoPide: "No problem. Enter the email you booked with and we’ll send you your code.", enviarCodigo: "Send me the code", volverLogin: "I have my code",
+      codigoEnviado: "If there’s a booking under that email, we’ve just sent you the code. Check your inbox (and spam folder). Once you have it, enter it here.",
       buscando: "Looking for your booking…", cargando: "One moment…",
       encontrada: "Here’s your booking, {n}:", encontrada0: "Here’s your booking:",
       casa: "House {n}", fechas: "Dates", noches1: "1 night", nochesN: "{n} nights", huespedes: "Guests",
@@ -143,7 +147,7 @@
         lodgify: "We couldn’t complete this in our booking system. Nothing has been charged or refunded. Please contact us and we’ll do it manually.",
         telefono: "That phone number doesn’t look right.", servicio: "Something went wrong on our side. Please try again in a few minutes or contact us.",
         pagos_no_configurados: "Online management isn’t available right now. Please contact us and we’ll help.",
-        red: "No connection. Check your internet and try again.", faltan: "Please fill in the code and the email."
+        red: "No connection. Check your internet and try again.", faltan: "Please fill in the code and the email.", email: "That email doesn’t look right."
       }
     }
   };
@@ -223,8 +227,21 @@
       return '<form class="gest-form" id="gest-login" novalidate>' +
         '<label><span>' + esc(t("codigo")) + '</span><input name="codigo" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="NC-XXXX-XXXX" maxlength="16" value="' + esc(codigo || S.codigo || "") + '"></label>' +
         '<label><span>' + esc(t("email")) + '</span><input name="email" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email || "") + '"></label>' +
-        '<button type="submit" class="btn btn-accent">' + esc(t("buscar")) + "</button></form>";
+        '<button type="submit" class="btn btn-accent">' + esc(t("buscar")) + "</button>" +
+        '<button type="button" class="gest-link" data-a="sin_codigo">' + esc(t("sinCodigo")) + "</button></form>";
     });
+  }
+  function sinCodigoPasoSinEco() { controles(EL._recordar); }
+  function sinCodigoPaso() {
+    yo("sinCodigo");
+    bot(function () { return "<p>" + esc(t("sinCodigoPide")) + "</p>"; });
+    controles(function () {
+      return '<form class="gest-form" id="gest-recordar" novalidate>' +
+        '<label><span>' + esc(t("email")) + '</span><input name="email" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email || "") + '"></label>' +
+        '<button type="submit" class="btn btn-accent">' + esc(t("enviarCodigo")) + "</button>" +
+        '<button type="button" class="gest-link" data-a="login">' + esc(t("volverLogin")) + "</button></form>";
+    });
+    EL._recordar = S.controles;
   }
 
   function entrar(codigo, email, despues) {
@@ -472,6 +489,8 @@
     else if (a === "contacto") contactoPaso();
     else if (a === "salir") salir();
     else if (a === "reiniciar") inicio();
+    else if (a === "sin_codigo") sinCodigoPaso();
+    else if (a === "login") { yo("volverLogin"); pedirLogin(); }
     else if (a === "nueva") { location.href = "index.html#apartamentos"; }
     else if (a === "refrescar") { yo("actualizar"); esperarCambio(19); }
   }
@@ -483,6 +502,16 @@
       if (!codigo || !email) { bot(function () { return '<p class="gest-err">' + esc(te("faltan")) + "</p>"; }); return render(); }
       S.log.push({ de: "yo", f: function () { return esc(codigo.toUpperCase()) + "<br>" + esc(email); } });
       entrar(codigo, email);
+    } else if (f.id === "gest-recordar") {
+      var em = f.email.value.trim();
+      if (!em) { bot(function () { return '<p class="gest-err">' + esc(te("email")) + "</p>"; }); return render(); }
+      S.email = em;
+      S.log.push({ de: "yo", f: function () { return esc(em); } });
+      llamar({ accion: "recordar", email: em, idioma: lang }).then(function (x) {
+        if (!x.j.ok) { bot(function () { return '<p class="gest-err">' + esc(te(x.j.error)) + "</p>"; }); return sinCodigoPasoSinEco(); }
+        bot(function () { return "<p>" + esc(t("codigoEnviado")) + "</p>"; });
+        pedirLogin();
+      });
     } else if (f.id === "gest-fechas") {
       var en = f.entrada.value, sa = f.salida.value;
       S.log.push({ de: "yo", f: function () { return esc(fecha(en)) + " → " + esc(fecha(sa)); } });
