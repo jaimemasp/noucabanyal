@@ -74,7 +74,7 @@ exports.handler = async (event) => {
     : `${q.noches} nights · check-in ${q.entrada} · check-out ${q.salida} · ${q.huespedes} guest${q.huespedes > 1 ? "s" : ""}`;
   const codigo = nuevoCodigo();
   const metadata = {
-    origen: "web", codigo, casa: String(casa), entrada: q.entrada, salida: q.salida, noches: String(q.noches),
+    origen: "web", codigo, email: huesped.email, casa: String(casa), entrada: q.entrada, salida: q.salida, noches: String(q.noches),
     huespedes: String(q.huespedes), total: String(cobro), nombre: huesped.nombre, telefono: huesped.telefono,
     pais: huesped.pais, hora_llegada: huesped.hora, mensaje: huesped.mensaje, idioma,
   };

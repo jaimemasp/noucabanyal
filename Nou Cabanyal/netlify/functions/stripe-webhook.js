@@ -13,7 +13,7 @@
 const crypto = require("crypto");
 const { stripe } = require("../lib/stripe.js");
 const { empujarALodgify, cancelarPorReembolso } = require("../lib/empujar.js");
-const { aplicarSuplementoPagado } = require("../lib/gestion.js");
+const { aplicarSuplementoPagado, correosReservaNueva } = require("../lib/gestion.js");
 
 const TOLERANCIA_S = 300;   // margen de reloj: se rechazan eventos de hace más de 5 minutos
 
@@ -69,6 +69,11 @@ exports.handler = async (event) => {
       // Pago de la diferencia de un cambio hecho por el huésped en "Gestionar reserva"
       const res = (s.metadata || {}).origen === "cambio" ? await aplicarSuplementoPagado(s) : await empujarALodgify(s);
       console.log("Webhook Stripe (pago):", id, JSON.stringify(res));
+      // Confirmación por email al huésped y aviso a Jaime (una sola vez; si falla, Stripe reintenta)
+      if ((s.metadata || {}).origen === "web") {
+        const c = await correosReservaNueva(s, res);
+        console.log("Webhook Stripe (correos):", id, JSON.stringify(c));
+      }
     } catch (e) {
       // Devolvemos 500 a propósito: Stripe reintentará el aviso más tarde.
       console.error("Webhook Stripe (pago):", id, e.message);

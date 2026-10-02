@@ -26,6 +26,18 @@ exports.handler = async (event) => {
   const ip = String(h["x-nf-client-connection-ip"] || h["x-forwarded-for"] || "?").split(",")[0].trim();
   if (frenado(ip)) return json(429, { error: "demasiados_intentos" });
 
+  // "¿No tienes el código?": responde siempre lo mismo, exista o no el email
+  if (d.accion === "recordar") {
+    apuntarFallo(ip);   // cuenta como intento para que no se pueda usar para mandar spam
+    try { await G.recordarCodigo(d.email, d.idioma); }
+    catch (e) {
+      if (e.codigo === "email") return json(400, { error: "email" });
+      console.error("Gestión (recordar):", e.message);
+      return json(502, { error: "servicio" });
+    }
+    return json(200, { ok: true });
+  }
+
   let b;
   try {
     b = await G.cargar(d.codigo, d.email);
