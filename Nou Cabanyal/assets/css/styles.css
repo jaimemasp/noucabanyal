@@ -675,3 +675,5 @@ a.card-media { cursor: pointer; }
   .gest-ops .btn { flex: 1 1 100%; }
   .gest-card dl div { grid-template-columns: 1fr; gap: 0; }
 }
+.gest-link { background: none; border: 0; padding: 4px 0; font: inherit; font-size: 15px; color: var(--sea); text-decoration: underline; cursor: pointer; justify-self: start; }
+.gest-link:hover { color: var(--sea-2); }
