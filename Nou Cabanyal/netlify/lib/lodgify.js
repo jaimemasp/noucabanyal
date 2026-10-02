@@ -77,11 +77,11 @@ async function disponibilidadLodgify(casa, R, { desde, hasta } = {}) {
 
 /* Crea una reserva real en Lodgify (bloquea esas fechas en todos los canales).
    Formato confirmado con la documentación oficial de Lodgify (POST /v1/reservation/booking). */
-async function crearReserva({ casa, entrada, salida, huespedes, nombre, email, telefono, total, moneda, referencia }) {
+function datosReserva({ casa, entrada, salida, huespedes, nombre, email, telefono, total, moneda, referencia }) {
   const propId = propiedadDeCasa(casa);
   const roomTypeId = tipoHabitacionDeCasa(casa);
   if (!propId || !roomTypeId) { const e = new Error("Casa sin mapear en Lodgify"); e.code = "casa_no_mapeada"; throw e; }
-  const payload = {
+  return {
     guest: { name: nombre, email: email || undefined, phone: telefono || undefined },
     status: "Booked",
     property_id: propId,
@@ -94,7 +94,44 @@ async function crearReserva({ casa, entrada, salida, huespedes, nombre, email, t
     source_text: `Reserva web Aparthotel Cabanyal · ${referencia}`,
     rooms: [{ room_type_id: roomTypeId, people: huespedes || 1, key_code: "" }],
   };
-  return lodgify("POST", "/v1/reservation/booking", payload);
+}
+async function crearReserva(datos) {
+  return lodgify("POST", "/v1/reservation/booking", datosReserva(datos));
+}
+
+function idDe(r) { return r && typeof r === "object" && r.id ? r.id : r; }
+
+/* Cambia fechas/huéspedes de una reserva existente. Devuelve el id de la reserva (el mismo, o
+   uno nuevo si hubo que rehacerla).
+   1) Intenta modificarla tal cual (PUT /v1/reservation/booking/{id}).
+   2) Si Lodgify no lo acepta, la cancela y crea otra con las fechas nuevas. Si esa creación
+      falla, vuelve a crear la reserva con las fechas antiguas para que el huésped no se quede
+      sin nada, y da error. */
+async function modificarReserva(bookingId, datos, { anterior } = {}) {
+  const id = String(bookingId || "").trim();
+  if (!id) { const e = new Error("Falta el id de la reserva"); e.code = "sin_booking_id"; throw e; }
+  try {
+    await lodgify("PUT", `/v1/reservation/booking/${encodeURIComponent(id)}`, datosReserva(datos));
+    return id;
+  } catch (e) {
+    console.error("Lodgify: la modificación directa no funcionó, se rehace la reserva:", e.status, e.message);
+  }
+  await cancelarReserva(id);
+  try {
+    return idDe(await crearReserva(datos));
+  } catch (e) {
+    console.error("Lodgify: no se pudo crear la reserva con las fechas nuevas:", e.message);
+    if (anterior) {
+      try {
+        const r = await crearReserva(Object.assign({}, datos, anterior));
+        const err = new Error("cambio_no_aplicado"); err.code = "cambio_no_aplicado"; err.idRestaurado = idDe(r); throw err;
+      } catch (e2) {
+        if (e2.code === "cambio_no_aplicado") throw e2;
+        console.error("Lodgify: GRAVE, no se pudo restaurar la reserva original:", e2.message);
+      }
+    }
+    throw e;
+  }
 }
 
 /* Cancela una reserva en Lodgify (libera esas noches en Booking, Airbnb y la web).
@@ -181,6 +218,6 @@ async function presupuestoLodgify({ casa, entrada, salida, huespedes }) {
 
 module.exports = {
   lodgify, configurado, CASA_A_PROPIEDAD, PROPIEDAD_A_CASA, CASA_A_TIPO_HABITACION,
-  propiedadDeCasa, casaDePropiedad, tipoHabitacionDeCasa, disponibilidadLodgify, crearReserva, cancelarReserva,
+  propiedadDeCasa, casaDePropiedad, tipoHabitacionDeCasa, disponibilidadLodgify, crearReserva, modificarReserva, cancelarReserva,
   tarifasLodgify, presupuestoLodgify,
 };

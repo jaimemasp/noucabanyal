@@ -39,7 +39,7 @@ async function empujarALodgify(s) {
     telefono: m.telefono,
     total: (s.amount_total || 0) / 100,
     moneda: (s.currency || "eur").toUpperCase(),
-    referencia: s.id,
+    referencia: m.codigo ? `${m.codigo} · ${s.id}` : s.id,
   });
   const bookingId = r && typeof r === "object" && r.id ? r.id : r;
 

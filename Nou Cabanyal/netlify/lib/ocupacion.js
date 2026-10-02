@@ -42,7 +42,9 @@ async function reservasDirectas({ fresco } = {}) {
     for (const s of pagadas) {
       const m = s.metadata || {};
       if (m.origen !== "web" || s.payment_status !== "paid" || cancelada(s.payment_intent)) continue;
-      out.push({ id: s.id, casa: String(m.casa), entrada: m.entrada, salida: m.salida, estado: "pagada" });
+      // Si el huésped ha cambiado las fechas, las buenas están en el PaymentIntent
+      const actual = (s.payment_intent && typeof s.payment_intent === "object" && s.payment_intent.metadata) || {};
+      out.push({ id: s.id, casa: String(m.casa), entrada: actual.entrada || m.entrada, salida: actual.salida || m.salida, estado: "pagada" });
     }
     for (const s of abiertas) {
       const m = s.metadata || {};
