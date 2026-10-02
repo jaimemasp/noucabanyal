@@ -23,6 +23,7 @@ const { stripe } = require("./stripe.js");
 const lodgify = require("./lodgify.js");
 const tarifas = require("./tarifas.js");
 const { nochesBloqueadas } = require("./ocupacion.js");
+const correo = require("./correo.js");
 
 const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // sin 0/O ni 1/I para que no se confundan
 const RE_CODIGO = /^NC[A-HJ-NP-Z2-9]{8}$/;
@@ -123,6 +124,19 @@ function publico(b) {
   };
 }
 
+/* Datos de la reserva para los correos */
+function datosCorreo(b, cambios) {
+  const r = {
+    codigo: b.codigo, casa: b.casa, entrada: b.entrada, salida: b.salida, noches: b.noches, huespedes: b.huespedes,
+    nombre: b.nombre, email: b.email, telefono: b.telefono, hora: b.hora, total: b.total, idioma: b.idioma, noReembolsable: b.noReembolsable,
+  };
+  if (cambios) {
+    Object.assign(r, cambios);
+    r.noches = R.diffDays(r.entrada, r.salida);
+  }
+  return r;
+}
+
 /* ---------- Reembolsos ---------- */
 /* Devuelve `importe` céntimos empezando por los pagos más recientes (suplementos primero).
    Así el pago principal solo se devuelve entero si se cancela la reserva. */
@@ -168,6 +182,9 @@ async function cancelar(b) {
   let devueltoAhora = 0;
   if (v.reembolso > 0) devueltoAhora = euros(await devolver(b, centimos(v.reembolso), "cancelacion_web"));
   console.log("Gestión: reserva cancelada por el huésped", b.codigo, "reembolso", devueltoAhora);
+  const r = datosCorreo(b);
+  await correo.seguro("cancelación huésped", () => correo.aHuesped(b.email, correo.cancelacion(r, devueltoAhora)));
+  await correo.seguro("cancelación aviso", () => correo.aDueno(correo.aviso("cancelacion", r, [["Reembolsado", devueltoAhora + " €"]])));
   return { reembolso: devueltoAhora };
 }
 
@@ -282,9 +299,13 @@ async function confirmarCambio(b, d, { base }) {
     return { accion: "pagar", url: s.url, cambio: c };
   }
 
+  const antes = `${b.entrada} → ${b.salida} · ${b.huespedes} huésped(es)`;
   await aplicarCambio(b, c);
   let devueltoAhora = 0;
   if (c.accion === "devolver" && c.importe > 0) devueltoAhora = euros(await devolver(b, centimos(c.importe), "cambio_web"));
+  const r = datosCorreo(b, { entrada: c.entrada, salida: c.salida, huespedes: c.huespedes, total: c.nuevoTotal, noReembolsable: b.noReembolsable || c.quedaNoReembolsable });
+  await correo.seguro("cambio huésped", () => correo.aHuesped(b.email, correo.cambio(r, { reembolso: devueltoAhora })));
+  await correo.seguro("cambio aviso", () => correo.aDueno(correo.aviso("cambio", r, [["Antes", antes], ["Reembolsado", devueltoAhora + " €"]])));
   return { accion: c.accion, reembolso: devueltoAhora, cambio: c };
 }
 
@@ -305,6 +326,7 @@ async function aplicarSuplementoPagado(s) {
     await stripe("POST", "/refunds", { payment_intent: pi.id, metadata: { codigo: m.codigo, motivo } });
     await stripe("POST", `/payment_intents/${pi.id}`, { metadata: { fallido: motivo } });
     console.error("Gestión: suplemento devuelto", m.codigo, motivo);
+    if (b) await correo.seguro("suplemento devuelto", () => correo.aDueno(correo.aviso("suplemento_devuelto", datosCorreo(b), [["Fechas pedidas", `${m.entrada} → ${m.salida}`], ["Motivo", motivo], ["Devuelto", euros(pi.amount_received || 0) + " €"]])));
     return { ok: false, motivo };
   };
 
@@ -318,6 +340,7 @@ async function aplicarSuplementoPagado(s) {
   const ocupadas = new Set([...occ.bloqueadas].filter((n) => !propias.has(n)));
   if (R.conflicto(c.entrada, c.salida, ocupadas)) return devolverSuplemento("fechas_ocupadas");
 
+  const antes = `${b.entrada} → ${b.salida} · ${b.huespedes} huésped(es)`;
   try {
     await aplicarCambio(b, c);
   } catch (e) {
@@ -325,7 +348,58 @@ async function aplicarSuplementoPagado(s) {
     return devolverSuplemento("error_lodgify");
   }
   await stripe("POST", `/payment_intents/${pi.id}`, { metadata: { aplicado: "1" } });
+  const pagado = euros(pi.amount_received || 0);
+  const r = datosCorreo(b, { entrada: c.entrada, salida: c.salida, huespedes: c.huespedes, total: c.nuevoTotal, noReembolsable: b.noReembolsable || c.quedaNoReembolsable });
+  await correo.seguro("cambio pagado huésped", () => correo.aHuesped(b.email, correo.cambio(r, { pagado })));
+  await correo.seguro("cambio pagado aviso", () => correo.aDueno(correo.aviso("cambio", r, [["Antes", antes], ["Diferencia cobrada", pagado + " €"]])));
   return { ok: true };
+}
+
+/* ---------- Reserva nueva: confirmación al huésped y aviso a Jaime ----------
+   La llama el webhook después de crear la reserva en Lodgify. Se envía una sola vez (marca
+   email_confirmacion en el pago). Si el correo al huésped falla, lanza error para que el
+   webhook devuelva 500 y Stripe lo reintente más tarde. */
+async function correosReservaNueva(s, res) {
+  const m = (s && s.metadata) || {};
+  const pi = s && s.payment_intent;
+  if (m.origen !== "web" || !pi || typeof pi !== "object") return { ok: false, motivo: "no_aplica" };
+  if (!correo.configurado()) return { ok: false, motivo: "correo_no_configurado" };
+  if ((pi.metadata || {}).email_confirmacion) return { ok: true, motivo: "ya_enviado" };
+  const r = {
+    codigo: m.codigo, casa: Number(m.casa), entrada: m.entrada, salida: m.salida, noches: Number(m.noches), huespedes: Number(m.huespedes),
+    nombre: m.nombre, email: (s.customer_details && s.customer_details.email) || pi.receipt_email, telefono: m.telefono, hora: m.hora_llegada,
+    mensaje: m.mensaje, total: (s.amount_total || 0) / 100, idioma: m.idioma === "en" ? "en" : "es",
+  };
+  if (res && res.ok) {
+    if (r.codigo) await correo.aHuesped(r.email, correo.confirmacion(r));
+    await correo.seguro("reserva nueva aviso", () => correo.aDueno(correo.aviso("nueva", r, [["Lodgify", (res && res.id) || "—"]])));
+    await stripe("POST", `/payment_intents/${pi.id}`, { metadata: { email_confirmacion: "1" } });
+    return { ok: true };
+  }
+  if (res && res.motivo === "conflicto") {
+    await correo.aDueno(correo.aviso("conflicto", r, [["Noche ocupada", res.dato || "—"], ["Pago Stripe", pi.id]]));
+    await stripe("POST", `/payment_intents/${pi.id}`, { metadata: { email_confirmacion: "conflicto" } });
+    return { ok: true, motivo: "aviso_conflicto" };
+  }
+  return { ok: false, motivo: "sin_reserva" };
+}
+
+/* "¿No tienes el código?": manda al email todas sus reservas futuras hechas en la web.
+   No dice nunca si el email existe o no. */
+const RE_EMAIL = /^[^\s@'"\\]+@[^\s@'"\\]+\.[^\s@'"\\]{2,}$/;
+async function recordarCodigo(emailBruto, idioma) {
+  const email = String(emailBruto || "").trim().toLowerCase();
+  if (!RE_EMAIL.test(email) || email.length > 120) throw fallo("email");
+  const r = await stripe("GET", "/payment_intents/search", { query: `metadata['email']:'${email}' AND status:'succeeded'`, limit: 50 });
+  const hoy = R.hoy();
+  const reservas = ((r && r.data) || [])
+    .map((p) => p.metadata || {})
+    .filter((m) => m.origen === "web" && m.tipo !== "suplemento" && RE_CODIGO.test(m.codigo || "") && String(m.cancelada || "").toLowerCase() !== "si" && !m.lodgify_cancelada && (m.salida || "") >= hoy)
+    .map((m) => ({ codigo: m.codigo, casa: m.casa, entrada: m.entrada, salida: m.salida }))
+    .sort((a, b) => (a.entrada < b.entrada ? -1 : 1));
+  if (!reservas.length) { console.log("Gestión: recordatorio pedido sin reservas activas"); return { enviado: false }; }
+  await correo.aHuesped(email, correo.recordatorio(reservas, idioma === "en" ? "en" : "es"));
+  return { enviado: true };
 }
 
 /* ---------- Datos del huésped ---------- */
@@ -341,11 +415,14 @@ async function actualizarDatos(b, d) {
   }
   if (!Object.keys(meta).length) throw fallo("sin_cambios");
   await stripe("POST", `/payment_intents/${b.piId}`, { metadata: meta });
+  const r = datosCorreo(b, { hora: meta.hora_llegada !== undefined ? meta.hora_llegada : b.hora, telefono: meta.telefono || b.telefono });
+  await correo.seguro("datos aviso", () => correo.aDueno(correo.aviso("datos", r, [["Antes", `hora ${b.hora || "—"} · tel. ${b.telefono || "—"}`]])));
   return meta;
 }
 
 module.exports = {
   nuevoCodigo, normalizarCodigo, codigoVisible, RE_CODIGO,
   cargar, publico, vistaCancelacion, cancelar, cotizar, confirmarCambio, aplicarSuplementoPagado, actualizarDatos,
+  correosReservaNueva, recordarCodigo,
   dentroDePlazo, limiteCancelacion,
 };
