@@ -9,6 +9,7 @@ const { nochesBloqueadas } = require("../lib/ocupacion.js");
 const { stripe, configurado } = require("../lib/stripe.js");
 const { json, sitio, casaValida } = require("../lib/http.js");
 const tarifas = require("../lib/tarifas.js");
+const { nuevoCodigo, codigoVisible } = require("../lib/gestion.js");
 
 const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 function limpio(v, max) { return String(v == null ? "" : v).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, max); }
@@ -71,8 +72,9 @@ exports.handler = async (event) => {
   const desc = idioma === "es"
     ? `${q.noches} noches · entrada ${q.entrada} · salida ${q.salida} · ${q.huespedes} huésped${q.huespedes > 1 ? "es" : ""}`
     : `${q.noches} nights · check-in ${q.entrada} · check-out ${q.salida} · ${q.huespedes} guest${q.huespedes > 1 ? "s" : ""}`;
+  const codigo = nuevoCodigo();
   const metadata = {
-    origen: "web", casa: String(casa), entrada: q.entrada, salida: q.salida, noches: String(q.noches),
+    origen: "web", codigo, casa: String(casa), entrada: q.entrada, salida: q.salida, noches: String(q.noches),
     huespedes: String(q.huespedes), total: String(cobro), nombre: huesped.nombre, telefono: huesped.telefono,
     pais: huesped.pais, hora_llegada: huesped.hora, mensaje: huesped.mensaje, idioma,
   };
@@ -84,10 +86,10 @@ exports.handler = async (event) => {
       customer_email: huesped.email,
       line_items: [{
         quantity: 1,
-        price_data: { currency: "eur", unit_amount: Math.round(cobro * 100), product_data: { name: nombreCasa, description: desc } },
+        price_data: { currency: "eur", unit_amount: Math.round(cobro * 100), product_data: { name: `${nombreCasa} · ${idioma === "es" ? "Código de reserva" : "Booking code"} ${codigoVisible(codigo)}`, description: desc } },
       }],
       metadata,
-      payment_intent_data: { description: `Reserva ${nombreCasa} ${q.entrada} → ${q.salida}`, metadata, receipt_email: huesped.email },
+      payment_intent_data: { description: `Reserva ${codigoVisible(codigo)} · ${nombreCasa} ${q.entrada} → ${q.salida}`, metadata, receipt_email: huesped.email },
       expires_at: Math.floor(Date.now() / 1000) + 31 * 60,
       success_url: `${base}/reserva-confirmada.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/casa.html?n=${casa}&cancelado=1#reservar`,

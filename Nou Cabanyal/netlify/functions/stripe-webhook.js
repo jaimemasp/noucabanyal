@@ -13,6 +13,7 @@
 const crypto = require("crypto");
 const { stripe } = require("../lib/stripe.js");
 const { empujarALodgify, cancelarPorReembolso } = require("../lib/empujar.js");
+const { aplicarSuplementoPagado } = require("../lib/gestion.js");
 
 const TOLERANCIA_S = 300;   // margen de reloj: se rechazan eventos de hace más de 5 minutos
 
@@ -65,7 +66,8 @@ exports.handler = async (event) => {
     try {
       // El evento no trae el payment_intent expandido: lo pedimos para poder marcar la reserva.
       const s = await stripe("GET", `/checkout/sessions/${id}`, { expand: ["payment_intent"] });
-      const res = await empujarALodgify(s);
+      // Pago de la diferencia de un cambio hecho por el huésped en "Gestionar reserva"
+      const res = (s.metadata || {}).origen === "cambio" ? await aplicarSuplementoPagado(s) : await empujarALodgify(s);
       console.log("Webhook Stripe (pago):", id, JSON.stringify(res));
     } catch (e) {
       // Devolvemos 500 a propósito: Stripe reintentará el aviso más tarde.

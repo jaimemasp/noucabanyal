@@ -6,6 +6,7 @@
 const { stripe, configurado } = require("../lib/stripe.js");
 const { json } = require("../lib/http.js");
 const { empujarALodgify } = require("../lib/empujar.js");
+const { codigoVisible } = require("../lib/gestion.js");
 
 exports.handler = async (event) => {
   const id = (event.queryStringParameters && event.queryStringParameters.session_id) || "";
@@ -30,6 +31,7 @@ exports.handler = async (event) => {
       casa: Number(m.casa), entrada: m.entrada, salida: m.salida, noches: Number(m.noches),
       huespedes: Number(m.huespedes), total: (s.amount_total || 0) / 100, nombre: m.nombre,
       email: s.customer_details && s.customer_details.email, idioma: m.idioma,
+      codigo: m.codigo ? codigoVisible(m.codigo) : null,
     });
   } catch (e) {
     return json(404, { error: "no_encontrada" });
