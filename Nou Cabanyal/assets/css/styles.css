@@ -243,6 +243,19 @@ p { margin: 0 0 1em; }
 @media (max-width: 900px) { .mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; } }
 @media (hover: none) { .mosaic figcaption { opacity: 1; } }
 
+/* ---------- Zonas comunes ---------- */
+.comunes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.comunes .com-item {
+  border: 0; padding: 0; background: var(--sand-2); border-radius: var(--radius); overflow: hidden;
+  cursor: zoom-in; text-align: left; display: flex; flex-direction: column; min-width: 0;
+}
+.comunes .com-item img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform .6s; }
+.comunes .com-item:hover img { transform: scale(1.04); }
+.comunes figcaption { padding: 12px 14px 15px; display: flex; flex-direction: column; gap: 3px; }
+.comunes figcaption strong { font-size: 15px; font-weight: 600; color: var(--ink); }
+.comunes figcaption span { font-size: 13.5px; line-height: 1.4; color: var(--ink-2); }
+@media (max-width: 560px) { .comunes { grid-template-columns: 1fr 1fr; gap: 12px; } .comunes figcaption span { display: none; } }
+
 /* ---------- Playa ---------- */
 .beach { display: grid; grid-template-columns: 1.4fr 1fr; background: var(--paper); }
 .beach-media { min-height: 520px; }
