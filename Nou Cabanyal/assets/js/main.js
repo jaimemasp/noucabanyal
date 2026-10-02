@@ -50,7 +50,7 @@
       "area.p2": "A un paseo tienes el Mercat del Cabanyal para la compra del día, bodegas centenarias como Casa Montaña —abierta desde 1836—, la plaza del Rosari con el Teatre El Musical, y un sinfín de bares y terrazas donde comer bien sin necesidad de coche.",
       "com.kicker": "El edificio",
       "com.title": "Las zonas comunes",
-      "com.lead": "Los apartamentos estan dentro de un edificio reformado entero. Esto es lo que te encuentras antes de abrir tu puerta.",
+      "com.lead": "Los apartamentos están dentro de un edificio reformado entero. Esto es lo que te encuentras antes de abrir tu puerta.",
       "com.gallery": "Zonas comunes",
       "area.gallery": "El Cabanyal",
       "beach.kicker": "La playa", "beach.title": "Del apartamento a la arena en un paseo",
