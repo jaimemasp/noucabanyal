@@ -25,7 +25,7 @@
       "meta.title": "Aparthotel Cabanyal · Apartamentos a 500 m de la playa en Valencia",
       "meta.desc": "Ocho apartamentos nuevos en el barrio del Cabanyal, a 500 m de la playa de Las Arenas (Valencia). Check-in autónomo, aire acondicionado y wifi. Reserva directa en nuestra web, sin intermediarios.",
       "skip": "Saltar al contenido",
-      "nav.apts": "Apartamentos", "nav.amen": "Qué incluye", "nav.area": "El barrio", "nav.beach": "La playa", "nav.loc": "Ubicación", "nav.book": "Reservar", "nav.home": "Volver al inicio",
+      "nav.apts": "Apartamentos", "nav.amen": "Qué incluye", "nav.area": "El barrio", "nav.com": "Zonas comunes", "nav.beach": "La playa", "nav.loc": "Ubicación", "nav.book": "Reservar", "nav.home": "Volver al inicio",
       "hero.alt": "Palmeras en el paseo marítimo, junto a la playa",
       "hero.alt2": "Barcas de pescadores en la playa, al atardecer",
       "hero.alt3": "Azulejos de una fachada modernista del Cabanyal",
@@ -48,6 +48,10 @@
       "area.kicker": "El barrio", "area.title": "El Cabanyal, el antiguo barrio de pescadores",
       "area.p1": "Calles estrechas paralelas al mar, fachadas cubiertas de azulejos de colores, murales y plazas con palmeras: el Cabanyal conserva su vida de barrio de siempre y, a la vez, es una de las zonas con más ambiente de Valencia.",
       "area.p2": "A un paseo tienes el Mercat del Cabanyal para la compra del día, bodegas centenarias como Casa Montaña —abierta desde 1836—, la plaza del Rosari con el Teatre El Musical, y un sinfín de bares y terrazas donde comer bien sin necesidad de coche.",
+      "com.kicker": "El edificio",
+      "com.title": "Las zonas comunes",
+      "com.lead": "Los apartamentos estan dentro de un edificio reformado entero. Esto es lo que te encuentras antes de abrir tu puerta.",
+      "com.gallery": "Zonas comunes",
       "area.gallery": "El Cabanyal",
       "beach.kicker": "La playa", "beach.title": "Del apartamento a la arena en un paseo",
       "beach.p1": "La playa de Las Arenas está a unos 500 metros: baja con la toalla por la mañana y vuelve a comer a casa. Arena fina, entrada suave al agua y un paseo marítimo lleno de palmeras que enlaza con la Malvarrosa.",
@@ -130,7 +134,7 @@
       "meta.title": "Aparthotel Cabanyal · Apartments 500 m from the beach in Valencia",
       "meta.desc": "Eight brand-new apartments in El Cabanyal, 500 m from Las Arenas beach in Valencia. Self check-in, air conditioning and WiFi. Book direct on our website, with no middlemen.",
       "skip": "Skip to content",
-      "nav.apts": "Apartments", "nav.amen": "Amenities", "nav.area": "The area", "nav.beach": "The beach", "nav.loc": "Location", "nav.book": "Book", "nav.home": "Back to home",
+      "nav.apts": "Apartments", "nav.amen": "Amenities", "nav.area": "The area", "nav.com": "Common areas", "nav.beach": "The beach", "nav.loc": "Location", "nav.book": "Book", "nav.home": "Back to home",
       "hero.alt": "Palm trees on the seafront promenade, next to the beach",
       "hero.alt2": "Fishing boats on the beach at sunset",
       "hero.alt3": "Tiles on a modernist facade in El Cabanyal",
@@ -153,6 +157,10 @@
       "area.kicker": "The area", "area.title": "El Cabanyal, Valencia’s old fishermen’s quarter",
       "area.p1": "Narrow streets running parallel to the sea, façades covered in colourful tiles, murals and squares lined with palm trees. El Cabanyal keeps its traditional neighbourhood life while being one of the liveliest areas in Valencia.",
       "area.p2": "Within a few minutes’ walk you’ll find the Cabanyal Market, historic taverns such as Casa Montaña (open since 1836), Plaça del Rosari with the Teatre El Musical, and plenty of bars and terraces to eat well without taking the car.",
+      "com.kicker": "The building",
+      "com.title": "Common areas",
+      "com.lead": "The apartments sit inside a fully refurbished building. This is what you walk through before you open your own door.",
+      "com.gallery": "Common areas",
       "area.gallery": "El Cabanyal",
       "beach.kicker": "The beach", "beach.title": "From your door to the sand in a short stroll",
       "beach.p1": "Las Arenas beach is about 500 metres away: head down with your towel in the morning and come back home for lunch. Fine sand and a palm-lined promenade that runs on to La Malvarrosa.",
@@ -246,6 +254,15 @@
   ];
 
   var KEY_AMEN = [["desk", "key.work"], ["ac", "key.ac"], ["wifi", "key.wifi"]];
+
+  /* Zonas comunes del edificio. Las fotos van en assets/img/comunes/01.jpg, 02.jpg... */
+  var COMUNES = [
+    { n: 1, es: ["Recepción", "Entrada con mesa grande y luz de calle"], en: ["Reception", "Entrance with a large table and street light"] },
+    { n: 2, es: ["Zona de estar", "Butacas y mesa baja en la planta de los apartamentos"], en: ["Lounge", "Armchairs and a low table on the apartment floor"] },
+    { n: 3, es: ["Pasillos", "Acceso interior a los ocho apartamentos"], en: ["Hallways", "Indoor access to the eight apartments"] },
+    { n: 4, es: ["Office común", "Fregadero y encimera de apoyo"], en: ["Shared utility area", "Sink and worktop"] },
+    { n: 5, es: ["Entrada con código", "Cerradura electrónica: entras sin esperar a nadie"], en: ["Keypad entry", "Electronic lock: let yourself in, no waiting"] }
+  ];
 
   var ZONA = [
     { f: "fachadas-206", c: "w2 h2", es: "Casas tradicionales con azulejos", en: "Traditional tiled houses" },
@@ -345,7 +362,15 @@
     }
     return "https://a0.muscache.com/im/pictures/hosting/Hosting-" + casa.airbnbRoom + "/original/" + p + ".jpeg?im_w=" + AB_SIZES[size];
   }
+  /* Cuantas fotos tiene la casa. Con fotos propias manda la lista "local" de data.js. */
+  function photoCount(casa) {
+    return CFG.photoSource === "local" ? (casa.local ? casa.local.length : 0) : casa.photos.length;
+  }
   function photoCaption(casa, i) {
+    if (CFG.photoSource === "local") {
+      var c = casa.local && casa.local[i];
+      return c ? t("cap." + c) : "";
+    }
     var p = casa.photos[i];
     return casa.platform === "booking" && p[2] ? t("cap." + p[2]) : "";
   }
@@ -395,7 +420,7 @@
         '<article class="card" data-casa="' + c.n + '" data-outdoor="' + (c.outdoor ? "1" : "") + '" data-guests="' + c.guests + '">' +
           '<a class="card-media" href="' + casaUrl(c) + '" aria-label="' + esc(t("card.view") + " · " + title) + '">' +
             '<img src="' + esc(photoUrl(c, 0, "card")) + '" alt="' + esc(title) + '" loading="lazy" decoding="async">' +
-            '<span class="card-count">' + icon("camera") + esc(t("card.photos", { n: c.photos.length })) + "</span>" +
+            '<span class="card-count">' + icon("camera") + esc(t("card.photos", { n: photoCount(c) })) + "</span>" +
           "</a>" +
           '<div class="card-body">' +
             '<div class="card-title"><h3><a href="' + casaUrl(c) + '">' + esc(title) + "</a></h3>" +
@@ -442,6 +467,16 @@
       return '<button type="button" class="' + z.c + '" data-zona="' + i + '" aria-label="' + esc(cap) + '">' +
         '<img src="assets/img/zona/' + z.f + (big ? "-l" : "-m") + '.jpg" alt="' + esc(cap) + '" loading="lazy" decoding="async">' +
         "<figcaption>" + esc(cap) + "</figcaption></button>";
+    }).join("");
+  }
+
+  function renderComunes() {
+    var el = $("#comunes-grid"); if (!el) return;
+    el.innerHTML = COMUNES.map(function (c, i) {
+      var tx = c[lang] || c.es;
+      return '<button type="button" class="com-item" data-comun="' + i + '" aria-label="' + esc(tx[0]) + '">' +
+        '<img src="assets/img/comunes/' + pad(c.n) + '.jpg" alt="' + esc(tx[0]) + '" loading="lazy" decoding="async">' +
+        '<figcaption><strong>' + esc(tx[0]) + "</strong><span>" + esc(tx[1]) + "</span></figcaption></button>";
     }).join("");
   }
 
@@ -503,12 +538,12 @@
 
     // Galería (1 grande + 4 pequeñas)
     var g = $("#casa-gallery");
-    var shown = Math.min(5, c.photos.length), gh = "";
+    var shown = Math.min(5, photoCount(c)), gh = "";
     for (var i = 0; i < shown; i++) {
       gh += '<button type="button" class="cg-item cg-' + i + '" data-photo="' + i + '" aria-label="' + esc(title + " · " + (i + 1)) + '">' +
         '<img src="' + esc(photoUrl(c, i, i === 0 ? "large" : "card")) + '" alt="' + esc(photoCaption(c, i) || title) + '"' + (i === 0 ? ' fetchpriority="high"' : ' loading="lazy"') + "></button>";
     }
-    gh += '<button type="button" class="cg-all" data-photo="0">' + icon("grid") + esc(t("casa.all", { n: c.photos.length })) + "</button>";
+    gh += '<button type="button" class="cg-all" data-photo="0">' + icon("grid") + esc(t("casa.all", { n: photoCount(c) })) + "</button>";
     g.innerHTML = gh;
 
     // Datos clave
@@ -935,7 +970,7 @@
     if (IS_CASA) { renderCasa(); }
     else if (IS_OK) { renderOk(); }
     else if (IS_COND) { renderCond(); }
-    else { renderBadges(); renderCards(); refrescarDesdeTarjetas(); renderAmenities(); renderMosaic(); renderLocation(); renderBooking(); }
+    else { renderBadges(); renderCards(); refrescarDesdeTarjetas(); renderAmenities(); renderComunes(); renderMosaic(); renderLocation(); renderBooking(); }
     store("nc-lang", lang);
   }
   function initialLang() {
@@ -987,8 +1022,16 @@
     if (lb.trigger && lb.trigger.focus) lb.trigger.focus();
   }
   function casaItems(casa) {
-    return casa.photos.map(function (_, i) {
+    var lista = []; for (var i = 0; i < photoCount(casa); i++) lista.push(i);
+    return lista.map(function (_, i) {
       return { src: photoUrl(casa, i, "large"), thumb: photoUrl(casa, i, "thumb"), cap: photoCaption(casa, i) };
+    });
+  }
+  function comunesItems() {
+    return COMUNES.map(function (c) {
+      var tx = c[lang] || c.es;
+      var u = "assets/img/comunes/" + pad(c.n) + ".jpg";
+      return { src: u, thumb: u, cap: tx[0] + " · " + tx[1] };
     });
   }
   function zonaItems() {
@@ -1051,6 +1094,8 @@
         return;
       }
       if (e.target.closest("#lb-book") && LB.book.getAttribute("href") === "#reservar") { closeGallery(); }
+      var cm = e.target.closest("[data-comun]");
+      if (cm) { openGallery(comunesItems(), Number(cm.getAttribute("data-comun")), t("com.gallery"), null, cm); return; }
       var z = e.target.closest("[data-zona]");
       if (z) { openGallery(zonaItems(), Number(z.getAttribute("data-zona")), t("area.gallery"), null, z); return; }
       var bz = e.target.closest("[data-zoom='beach']");
