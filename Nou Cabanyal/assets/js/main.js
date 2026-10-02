@@ -10,12 +10,13 @@
   var IS_CASA = document.body.classList.contains("page-casa");
   var IS_OK = document.body.classList.contains("page-ok");
   var IS_COND = document.body.classList.contains("page-cond");
+  var IS_GEST = document.body.classList.contains("page-gest");
   var RS = window.NC_RESERVAS || null;
   var API = CFG.api || "/api";
   var ONLINE = /^https?:$/.test(location.protocol);
   function cancelDias() { return RS ? RS.precios.cancelacionGratisDias : 5; }
   function limiteCancelacion(entrada) { return RS && entrada ? RS.addDays(entrada, -cancelDias()) : null; }
-  function cancelable(entrada) { var l = limiteCancelacion(entrada); return !!l && l > RS.hoy(); }
+  function cancelable(entrada) { var l = limiteCancelacion(entrada); return !!l && l >= RS.hoy(); }
 
   /* ------------------------------------------------------------------
      TEXTOS (ES / EN)
@@ -25,7 +26,7 @@
       "meta.title": "Aparthotel Cabanyal · Apartamentos a 500 m de la playa en Valencia",
       "meta.desc": "Ocho apartamentos nuevos en el barrio del Cabanyal, a 500 m de la playa de Las Arenas (Valencia). Check-in autónomo, aire acondicionado y wifi. Reserva directa en nuestra web, sin intermediarios.",
       "skip": "Saltar al contenido",
-      "nav.apts": "Apartamentos", "nav.amen": "Qué incluye", "nav.area": "El barrio", "nav.com": "Zonas comunes", "nav.beach": "La playa", "nav.loc": "Ubicación", "nav.book": "Reservar", "nav.home": "Volver al inicio",
+      "nav.manage": "Mi reserva", "nav.apts": "Apartamentos", "nav.amen": "Qué incluye", "nav.area": "El barrio", "nav.com": "Zonas comunes", "nav.beach": "La playa", "nav.loc": "Ubicación", "nav.book": "Reservar", "nav.home": "Volver al inicio",
       "hero.alt": "Palmeras en el paseo marítimo, junto a la playa",
       "hero.alt2": "Barcas de pescadores en la playa, al atardecer",
       "hero.alt3": "Azulejos de una fachada modernista del Cabanyal",
@@ -118,7 +119,8 @@
       "err.stripe": "No hemos podido conectar con la pasarela de pago. Inténtalo de nuevo en unos minutos.",
       "err.precio_no_disponible": "Ahora mismo no podemos confirmar el precio. Inténtalo de nuevo en unos minutos.",
       "err.precio_cambiado": "El precio de esas fechas acaba de cambiar. Vuelve a cargar la página para ver el precio actualizado.",
-      "foot.terms": "Condiciones y privacidad",
+      "foot.terms": "Condiciones y privacidad", "foot.manage": "Gestionar mi reserva",
+      "ok.code": "Código de reserva", "ok.manage": "Gestionar mi reserva", "ok.manage.p": "Guarda este código: con él y tu email puedes cambiar fechas, cancelar o actualizar tus datos desde la web.",
       /* Confirmación */
       "ok.meta": "Reserva confirmada · Aparthotel Cabanyal", "ok.title": "¡Reserva confirmada!", "ok.lead": "Gracias, {n}. Hemos recibido tu pago y tu casa te está esperando.",
       "ok.pending": "Estamos confirmando tu pago", "ok.pending.p": "Si has completado el pago, recibirás un email de confirmación en unos minutos.",
@@ -134,7 +136,7 @@
       "meta.title": "Aparthotel Cabanyal · Apartments 500 m from the beach in Valencia",
       "meta.desc": "Eight brand-new apartments in El Cabanyal, 500 m from Las Arenas beach in Valencia. Self check-in, air conditioning and WiFi. Book direct on our website, with no middlemen.",
       "skip": "Skip to content",
-      "nav.apts": "Apartments", "nav.amen": "Amenities", "nav.area": "The area", "nav.com": "Common areas", "nav.beach": "The beach", "nav.loc": "Location", "nav.book": "Book", "nav.home": "Back to home",
+      "nav.manage": "My booking", "nav.apts": "Apartments", "nav.amen": "Amenities", "nav.area": "The area", "nav.com": "Common areas", "nav.beach": "The beach", "nav.loc": "Location", "nav.book": "Book", "nav.home": "Back to home",
       "hero.alt": "Palm trees on the seafront promenade, next to the beach",
       "hero.alt2": "Fishing boats on the beach at sunset",
       "hero.alt3": "Tiles on a modernist facade in El Cabanyal",
@@ -225,7 +227,8 @@
       "err.stripe": "We couldn’t connect to the payment gateway. Please try again in a few minutes.",
       "err.precio_no_disponible": "We can’t confirm the price right now. Please try again in a few minutes.",
       "err.precio_cambiado": "The price for those dates has just changed. Please reload the page to see the updated price.",
-      "foot.terms": "Terms & privacy",
+      "foot.terms": "Terms & privacy", "foot.manage": "Manage my booking",
+      "ok.code": "Booking code", "ok.manage": "Manage my booking", "ok.manage.p": "Keep this code: with it and your email you can change dates, cancel or update your details on our website.",
       "ok.meta": "Booking confirmed · Aparthotel Cabanyal", "ok.title": "Booking confirmed!", "ok.lead": "Thank you, {n}. We’ve received your payment and your apartment is waiting for you.",
       "ok.pending": "We’re confirming your payment", "ok.pending.p": "If you completed the payment, you’ll receive a confirmation email within a few minutes.",
       "ok.err": "We can’t find this booking", "ok.err.p": "If you have paid and have any questions, please contact us.",
@@ -797,11 +800,11 @@
   }
 
   /* ---------- Formulario del huésped y pago ---------- */
-  function horasLlegada(c) {
-    var p = String(c.checkin).split("–");
-    var ini = parseInt(p[0], 10) || 15, fin = p[1] ? parseInt(p[1], 10) : 23;
+  /* Las 24 franjas del día: la entrada es autónoma, el huésped puede llegar a cualquier hora */
+  function horasLlegada() {
+    function dos(h) { return (h < 10 ? "0" : "") + h + ":00"; }
     var out = [];
-    for (var hh = ini; hh < fin; hh++) out.push(hh + ":00–" + (hh + 1) + ":00");
+    for (var hh = 0; hh < 24; hh++) out.push(dos(hh) + "–" + dos((hh + 1) % 24));
     return out;
   }
 
@@ -923,6 +926,7 @@
       '<div class="ok-icon is-ok">' + icon("check") + "</div>" +
       "<h1>" + esc(t("ok.title")) + '</h1><p class="lead">' + esc(t("ok.lead", { n: nombre })) + "</p>" +
       '<dl class="ok-dl">' +
+        (d.codigo ? "<div><dt>" + esc(t("ok.code")) + '</dt><dd><strong class="ok-code">' + esc(d.codigo) + "</strong></dd></div>" : "") +
         "<div><dt>" + esc(t("ok.casa")) + "</dt><dd>" + esc(t("card.house", { n: d.casa })) + "</dd></div>" +
         "<div><dt>" + esc(t("ok.dates")) + "</dt><dd>" + esc(fechaLarga(d.entrada)) + " → " + esc(fechaLarga(d.salida)) + " · " + esc(t("bw.nights", { n: d.noches })) + "</dd></div>" +
         "<div><dt>" + esc(t("ok.guests")) + "</dt><dd>" + d.huespedes + "</dd></div>" +
@@ -931,7 +935,8 @@
         "<div><dt>" + esc(t("ok.cancel")) + "</dt><dd>" + esc(cancelable(d.entrada) ? t("ok.cancel.si", { f: fechaLarga(limiteCancelacion(d.entrada)) }) : t("ok.cancel.no")) + "</dd></div>" +
       "</dl>" +
       "<h2>" + esc(t("ok.next")) + '</h2><ol class="ok-steps"><li>' + esc(t("ok.n1")) + "</li><li>" + esc(t("ok.n2")) + "</li>" +
-        (casa ? "<li>" + esc(t("ok.n3", { "in": cap1(checkinText(casa)), out: checkoutText(casa) })) + "</li>" : "") + "</ol>" + inicio;
+        (casa ? "<li>" + esc(t("ok.n3", { "in": cap1(checkinText(casa)), out: checkoutText(casa) })) + "</li>" : "") + "</ol>" +
+      (d.codigo ? '<p class="ok-manage">' + esc(t("ok.manage.p")) + '</p><p class="ok-actions"><a class="btn btn-sea" href="gestionar.html?c=' + encodeURIComponent(d.codigo) + '">' + esc(t("ok.manage")) + '</a> <a class="btn btn-outline" href="index.html">' + esc(t("ok.home")) + "</a></p>" : inicio);
   }
 
   /* ------------------------------------------------------------------
@@ -956,7 +961,7 @@
   function applyLang(l) {
     lang = T[l] ? l : "es";
     document.documentElement.lang = lang;
-    if (!IS_CASA && !IS_OK && !IS_COND) {
+    if (!IS_CASA && !IS_OK && !IS_COND && !IS_GEST) {
       document.title = t("meta.title");
       var md = $('meta[name="description"]'); if (md) md.setAttribute("content", t("meta.desc"));
     }
@@ -970,8 +975,11 @@
     if (IS_CASA) { renderCasa(); }
     else if (IS_OK) { renderOk(); }
     else if (IS_COND) { renderCond(); }
+    else if (IS_GEST) { /* lo pinta gestionar.js */ }
     else { renderBadges(); renderCards(); refrescarDesdeTarjetas(); renderAmenities(); renderComunes(); renderMosaic(); renderLocation(); renderBooking(); }
     store("nc-lang", lang);
+    window.NC_LANG = lang;
+    try { document.dispatchEvent(new CustomEvent("nc:lang", { detail: lang })); } catch (e) {}
   }
   function initialLang() {
     var q = /[?&]lang=(es|en)/.exec(location.search);
